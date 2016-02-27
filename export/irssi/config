@@ -1,0 +1,259 @@
+servers = (
+  { address = "irc.freenode.net"; chatnet = "freenode"; },
+  { address = "irc.rizon.net"; chatnet = "rizon"; port = "6667"; },
+  { address = "irc.nanami.fr"; chatnet = "nanami"; port = "6667"; }
+);
+
+chatnets = {
+  freenode = { type = "IRC"; };
+  rizon = { 
+    type = "IRC";
+    max_kicks = "1";
+    max_msgs = "3";
+    max_whois = "30";
+  };
+  nanami = { type = "IRC"; };
+};
+
+channels = (
+  { name = "#touhou-france"; chatnet = "nanami"; autojoin = "Yes"; },
+  { name = "#editotaku"; chatnet = "nanami"; autojoin = "Yes"; },
+  { name = "#vocaloid"; chatnet = "nanami"; autojoin = "Yes"; },
+  { name = "#android-fr"; chatnet = "freenode"; autojoin = "Yes"; }
+);
+
+aliases = {
+  J = "join";
+  WJOIN = "join -window";
+  WQUERY = "query -window";
+  LEAVE = "part";
+  BYE = "quit";
+  EXIT = "quit";
+  SIGNOFF = "quit";
+  DESCRIBE = "action";
+  DATE = "time";
+  HOST = "userhost";
+  LAST = "lastlog";
+  SAY = "msg *";
+  WI = "whois";
+  WII = "whois $0 $0";
+  WW = "whowas";
+  W = "who";
+  N = "names";
+  M = "msg";
+  T = "topic";
+  C = "clear";
+  CL = "clear";
+  K = "kick";
+  KB = "kickban";
+  KN = "knockout";
+  BANS = "ban";
+  B = "ban";
+  MUB = "unban *";
+  UB = "unban";
+  IG = "ignore";
+  UNIG = "unignore";
+  SB = "scrollback";
+  UMODE = "mode $N";
+  WC = "window close";
+  WN = "window new hide";
+  SV = "say Irssi $J ($V) - http://irssi.org/";
+  GOTO = "sb goto";
+  CHAT = "dcc chat";
+  RUN = "SCRIPT LOAD";
+  CALC = "exec - if which bc &>/dev/null\\; then echo '$*' | bc | awk '{print \"$*=\"$$1}'\\; else echo bc was not found\\; fi";
+  SBAR = "STATUSBAR";
+  INVITELIST = "mode $C +I";
+  Q = "QUERY";
+  "MANUAL-WINDOWS" = "set use_status_window off;set autocreate_windows off;set autocreate_query_level none;set autoclose_windows off;set reuse_unused_windows on;save";
+  EXEMPTLIST = "mode $C +e";
+  ATAG = "WINDOW SERVER";
+  UNSET = "set -clear";
+  RESET = "set -default";
+  kernelversion = "/exec -o uname -r";
+};
+
+statusbar = {
+  # formats:
+  # when using {templates}, the template is shown only if it's argument isn't
+  # empty unless no argument is given. for example {sb} is printed always,
+  # but {sb $T} is printed only if $T isn't empty.
+
+  items = {
+    # start/end text in statusbars
+    barstart = "{sbstart}";
+    barend = "{sbend}";
+
+    topicbarstart = "{topicsbstart}";
+    topicbarend = "{topicsbend}";
+
+    # treated "normally", you could change the time/user name to whatever
+    time = "{sb $Z}";
+    user = "{sb {sbnickmode $cumode}$N{sbmode $usermode}{sbaway $A}}";
+
+    # treated specially .. window is printed with non-empty windows,
+    # window_empty is printed with empty windows
+    window = "{sb $winref:$tag/$itemname{sbmode $M}}";
+    window_empty = "{sb $winref{sbservertag $tag}}";
+    prompt = "{prompt $[.15]itemname}";
+    prompt_empty = "{prompt $winname}";
+    topic = " $topic";
+    topic_empty = " Irssi v$J - http://www.irssi.org";
+
+    # all of these treated specially, they're only displayed when needed
+    lag = "{sb Lag: $0-}";
+    act = "{sb Act: $0-}";
+    more = "-- more --";
+  };
+
+  # there's two type of statusbars. root statusbars are either at the top
+  # of the screen or at the bottom of the screen. window statusbars are at
+  # the top/bottom of each split window in screen.
+  default = {
+    # the "default statusbar" to be displayed at the bottom of the window.
+    # contains all the normal items.
+    window = {
+      disabled = "no";
+
+      # window, root
+      type = "window";
+      # top, bottom
+      placement = "bottom";
+      # number
+      position = "1";
+      # active, inactive, always
+      visible = "active";
+
+      # list of items in statusbar in the display order
+      items = {
+        barstart = { priority = "100"; };
+        time = { };
+        user = { };
+        window = { };
+        window_empty = { };
+        lag = { priority = "-1"; };
+        act = { priority = "10"; };
+        more = { priority = "-1"; alignment = "right"; };
+        barend = { priority = "100"; alignment = "right"; };
+        usercount = { };
+      };
+    };
+
+    # statusbar to use in inactive split windows
+    window_inact = {
+      type = "window";
+      placement = "bottom";
+      position = "1";
+      visible = "inactive";
+      items = {
+        barstart = { priority = "100"; };
+        window = { };
+        window_empty = { };
+        more = { priority = "-1"; alignment = "right"; };
+        barend = { priority = "100"; alignment = "right"; };
+      };
+    };
+
+    # we treat input line as yet another statusbar :) It's possible to
+    # add other items before or after the input line item.
+    prompt = {
+      type = "root";
+      placement = "bottom";
+      # we want to be at the bottom always
+      position = "100";
+      visible = "always";
+      items = {
+        prompt = { priority = "-1"; };
+        prompt_empty = { priority = "-1"; };
+        # treated specially, this is the real input line.
+        input = { priority = "10"; };
+      };
+    };
+
+    # topicbar
+    topic = {
+      type = "root";
+      placement = "top";
+      position = "1";
+      visible = "always";
+      items = {
+        topicbarstart = { priority = "100"; };
+        topic = { };
+        topic_empty = { };
+        topicbarend = { priority = "100"; alignment = "right"; };
+      };
+    };
+    wl0 = {
+      items = {
+        barstar = { priority = "100"; };
+        wlstat0 = { };
+        barend = { priority = "100"; alignment = "right"; };
+      };
+    };
+  };
+};
+settings = {
+  core = {
+    real_name = "pgreze";
+    user_name = "pgreze";
+    nick = "pgreze";
+  };
+  "fe-text" = { actlist_sort = "refnum"; };
+  "irc/core" = { alternate_nick = "frenchduff"; };
+  "fe-common/core" = { theme = "tzu"; };
+};
+keyboard = (
+  { key = "^[[11~"; id = "key"; data = "F1"; },
+  { key = "^[OP"; id = "key"; data = "F1"; },
+  { key = "F1"; id = "change_window"; data = "1"; },
+  { key = "^[[12~"; id = "key"; data = "F2"; },
+  { key = "^[OQ"; id = "key"; data = "F2"; },
+  { key = "F2"; id = "change_window"; data = "2"; },
+  { key = "^[[13~"; id = "key"; data = "F3"; },
+  { key = "^[OR"; id = "key"; data = "F3"; },
+  { key = "F3"; id = "change_window"; data = "3"; },
+  { key = "^[[14~"; id = "key"; data = "F4"; },
+  { key = "^[OS"; id = "key"; data = "F4"; },
+  { key = "F4"; id = "change_window"; data = "4"; },
+  { key = "^[[15~"; id = "key"; data = "F5"; },
+  { key = "F5"; id = "change_window"; data = "5"; },
+  { key = "^[[17~"; id = "key"; data = "F6"; },
+  { key = "F6"; id = "change_window"; data = "6"; },
+  { key = "^[[18~"; id = "key"; data = "F7"; },
+  { key = "F7"; id = "change_window"; data = "7"; },
+  { key = "^[[19~"; id = "key"; data = "F8"; },
+  { key = "F8"; id = "change_window"; data = "8"; },
+  { key = "^[[20~"; id = "key"; data = "F9"; },
+  { key = "F9"; id = "change_window"; data = "9"; },
+  { key = "^[[21~"; id = "key"; data = "F10"; },
+  { key = "F10"; id = "change_window"; data = "10"; },
+  { key = "^[[23~"; id = "key"; data = "F11"; },
+  { key = "F11"; id = "change_window"; data = "11"; },
+  { key = "^[[24~"; id = "key"; data = "F12"; },
+  { key = "F12"; id = "change_window"; data = "12"; },
+  { key = "^[[11^"; id = "key"; data = "cF1"; },
+  { key = "cF1"; id = "change_window"; data = "13"; },
+  { key = "^[[12^"; id = "key"; data = "cF2"; },
+  { key = "cF2"; id = "change_window"; data = "14"; },
+  { key = "^[[13^"; id = "key"; data = "cF3"; },
+  { key = "cF3"; id = "change_window"; data = "15"; },
+  { key = "^[[14^"; id = "key"; data = "cF4"; },
+  { key = "cF4"; id = "change_window"; data = "16"; },
+  { key = "^[[15^"; id = "key"; data = "cF5"; },
+  { key = "cF5"; id = "change_window"; data = "17"; },
+  { key = "^[[17^"; id = "key"; data = "cF6"; },
+  { key = "cF6"; id = "change_window"; data = "18"; },
+  { key = "^[[18^"; id = "key"; data = "cF7"; },
+  { key = "cF7"; id = "change_window"; data = "19"; },
+  { key = "^[[19^"; id = "key"; data = "cF8"; },
+  { key = "cF8"; id = "change_window"; data = "20"; },
+  { key = "^[[20^"; id = "key"; data = "cF9"; },
+  { key = "cF9"; id = "change_window"; data = "21"; },
+  { key = "^[[21^"; id = "key"; data = "cF10"; },
+  { key = "cF10"; id = "change_window"; data = "22"; },
+  { key = "^[[23^"; id = "key"; data = "cF11"; },
+  { key = "cF11"; id = "change_window"; data = "23"; },
+  { key = "^[[24^"; id = "key"; data = "cF12"; },
+  { key = "cF12"; id = "change_window"; data = "24"; }
+);
+hilights = ( { text = "mot"; nick = "yes"; word = "yes"; } );

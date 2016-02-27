@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+SCRIPT_PATH=${0%/*}
+cd "$SCRIPT_PATH"
+
+echo ">> Init/update git submodule(s)"
+git submodule init
+git submodule update
+
+echo ">> Export dotfiles from $PWD"
+prefix=$(date +%s)
+for i in export/*;do
+    abspath="$PWD/$i"
+    target="$HOME/.${i##*/}"
+
+    if [ -e "$target" ] || [ -L "$target" ];then
+        backup=/tmp/"$prefix-${i##*/}"
+        echo "Moving $target to $backup"
+        mv "$target" "$backup"
+    fi
+
+    echo "$abspath -> $target"
+    ln -s "$abspath" "$target"
+done
+
+cd - > /dev/null

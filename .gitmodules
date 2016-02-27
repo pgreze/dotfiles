@@ -1,0 +1,6 @@
+[submodule "export/vim/bundle/syntastic"]
+	path = export/vim/bundle/syntastic
+	url = git://github.com/scrooloose/syntastic.git
+[submodule "export/vim/bundle/emmet-vim"]
+	path = export/vim/bundle/emmet-vim
+	url = git://github.com/mattn/emmet-vim.git

@@ -1,0 +1,45 @@
+[user]
+	name = pgreze
+	email = pierrick.greze@gmail.com
+[giggle]
+	main-window-maximized = false
+	main-window-geometry = 962x807+1600+0
+	main-window-view = HistoryView
+	history-view-vpane-position = 181
+	file-view-vpane-position = 658
+[color]
+	ui = auto
+	branch = auto
+	diff = auto
+	status = auto
+[core]
+	editor = vim
+[alias]
+	st = status -s
+	ci = commit
+	br = branch
+	co = checkout
+	sh = show
+	sth = stash
+	pr = pull --rebase=preserve
+	df = diff --word-diff
+	ri = rebase -i --preserve-merges
+
+	# lg -p for changed lines, see https://coderwall.com/p/euwpig
+	l = log -M --decorate --graph --oneline
+	lg = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(yellow)%h%C(reset)%C(auto)%d%C(reset) %C(green)(%ar)%C(reset) %C(white)%s%C(reset)'
+
+	# serve for read only
+	serve = !git daemon --base-path=. --export-all --reuseaddr --informative-errors --verbose
+	# hub for read-write 
+	hub = !git daemon --base-path=. --export-all --enable=receive-pack --reuseaddr --informative-errors --verbose
+	# used with git clone http://localhost:1234/
+
+[push]
+	default = simple
+[merge]
+	tool = vimdiff
+[pull]
+	# Preserve to keep local merges
+	# See http://www.git-attitude.fr/2014/05/04/bien-utiliser-git-merge-et-rebase/#le-cas%20%C3%A9pineux%20du%20pull%20qui%20rebase%20un%20merge%20local
+	rebase = preserve
