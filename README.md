@@ -12,16 +12,12 @@ curl -L http://install.ohmyz.sh | sh
 ## OSX commands
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 brew doctor
-brew install coreutils findutils autojump cmake ffmpeg gcc git go irssi latex2rtf mkvtoolnix ncdu tmux tree wget htop rename git-flow
-brew install Caskroom/cask/java caskroom/cask/brew-cask
-
+brew install coreutils findutils autojump gcc git irssi latex2rtf mkvtoolnix ncdu tmux tree wget htop rename git-flow
+cmake ffmpeg
 brew cask doctor
-brew cask install vlc android-file-transfer dropbox mplayerx vlc skype alfred iterm2 spotify
-brew cask install electrum libreoffice virtualbox cyberduck chromium the-unarchiver tunnelblick
-brew cask install qlmarkdown flash
-# alternative versions
-brew tap caskroom/versions
-brew cask install firefox-beta sublime-text3 keepassx0
+brew cask install java
+brew cask install android-file-transfer dropbox mplayerx skype qlmarkdown
+brew cask install the-unarchiver libreoffice electrum virtualbox cyberduck
 
 # ANDROID DEV
 # android-studio-bundle: android-studio + sdk
@@ -32,8 +28,3 @@ brew cask install android-studio genymotion
 git clone https://github.com/pgreze/dotfiles ~/.my
 ~/.my/init
 ```
-
-# Dependencies #
-
-- [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh)
-- [autojump](https://github.com/joelthelion/autojump)
