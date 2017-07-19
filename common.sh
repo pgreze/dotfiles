@@ -57,8 +57,23 @@ function extract {
     fi
 }
 
-# Git
+##
+## Git
+##
+
+GIT_DEVELOP="develop"
+
 alias gs='git st'
+function spull {
+    branch=$(git symbolic-ref --short HEAD)
+    # sync update submodule urls (if changed) and update -f clean all previous work. Be careful!
+    git co $GIT_DEVELOP
+    git pull
+    git submodule sync --recursive
+    git submodule update --init --recursive -f
+    # Go back to previous branch
+    [[ $branch != $GIT_DEVELOP ]] && git co $branch
+}
 
 # Python
 alias cleanpyc="find . -name '*.pyc' -delete"
