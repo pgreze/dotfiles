@@ -1,0 +1,103 @@
+#!/usr/bin/env python3
+
+__author__ = "Pierrick Greze (github: @pgreze)"
+__license__ = "LGPL"
+__version__ = "1.0"
+
+import re
+import argparse
+import subprocess
+import itertools
+from pathlib import Path
+
+def resolve_main_activity(module_path:Path=None, apk_path:Path=None):
+    '''
+    Look for this pattern:
+        <activity
+        android:name="mypackage.SplashActivity"
+        ...>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+    Inside AndroidManifest if a full one is available.
+
+    module_path: root folder of the android application gradle (sub)project.
+
+    :return: 'app_package/activity_name' str
+    '''
+    activity = None
+    if not module_path:
+        # Try to resolve build/outputs/apk/debug.apk pattern
+        if apk_path and apk_path.parents[2] == 'build':
+            activity = resolve_main_activity(apk_path=apk_path.parents[3])
+        # Consider current path and traditionnal app subproject
+        if not activity:
+            activity = resolve_main_activity(Path('.'))
+        if not activity:
+            activity = resolve_main_activity(Path('./app'))
+        return activity
+
+    # Try to read manifest file
+    manifest_path = Path(module_path, "build/intermediates/manifests/full/debug/AndroidManifest.xml")
+    if manifest_path.exists():
+        package = None
+        last_name = None
+        for l in open(manifest_path):
+            res = re.findall('package="([^"]+)"', l)
+            if res and not package: package = res[0]
+            # Last activity with this flag is resolved by Android system
+            if 'android:name="android.intent.action.MAIN"' in l:
+                activity = last_name
+                continue
+            # Resolve all names
+            res = re.findall('android:name="([^"]+)"', l)
+            if res: last_name = res[0]
+        # Merge app package and activity name
+        activity = f'{package}/{activity}'
+    return activity
+
+
+def resolve_device():
+    p = subprocess.run("adb devices".split(), stdout=subprocess.PIPE)
+    devices = [i.split('\t')[0] for i in (l.strip() for l in p.stdout.decode().split("\n")[1:-1]) if i]
+    if len(devices) > 1:
+        print("Choose devices: %s" % ', '.join(f"{i + 1}: {device}" for i, device in enumerate(devices)))
+        choice = int(input("> ").strip()) - 1
+    else:
+        choice = 0
+    return devices[choice]
+
+
+def install_apk(device, apk_path):
+    temp_apk = "/data/local/tmp/d.apk"
+    print("Upload apk")
+    subprocess.run(f"adb -s {device} push".split() + [apk_path, temp_apk])
+    print("Install")
+    subprocess.run(f"adb -s {device} shell pm install -r".split() + [temp_apk])
+    # Finally delete apk
+    subprocess.run(f"adb -s {device} shell rm".split() + [temp_apk])
+
+
+def start_activity(device, activity_name):
+    subprocess.run(f"adb -s {device} shell am start -n {activity_name} "
+        "-a android.intent.action.MAIN -c android.intent.category.LAUNCHER".split())
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='Deployment apk utility')
+    parser.add_argument('apk', type=Path, help='Apk file path')
+    parser.add_argument('-v', '--verbose', action="store_true")
+    parser.add_argument('--project', type=Path, help='Apk gradle (sub)project path')
+    return parser.parse_args()
+
+
+if __name__ == '__main__':
+    args = parse_args()
+    # Install apk
+    device = resolve_device()
+    install_apk(device, args.apk)
+    # Try to launch main activity
+    activity = resolve_main_activity(args.project, args.apk)
+    if activity:
+        start_activity(device, activity)
