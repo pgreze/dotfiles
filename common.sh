@@ -64,6 +64,8 @@ function extract {
 GIT_DEVELOP="develop"
 
 alias gs='git st'
+alias gd='git diff'
+
 function spull {
     branch=$(git symbolic-ref --short HEAD)
     # sync update submodule urls (if changed) and update -f clean all previous work. Be careful!
