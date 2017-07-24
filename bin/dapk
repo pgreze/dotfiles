@@ -88,6 +88,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Deployment apk utility')
     parser.add_argument('apk', type=Path, help='Apk file path')
     parser.add_argument('-v', '--verbose', action="store_true")
+    parser.add_argument('-s', '--serial', help="use device with given serial number")
     parser.add_argument('--project', type=Path, help='Apk gradle (sub)project path')
     return parser.parse_args()
 
@@ -95,7 +96,7 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     # Install apk
-    device = resolve_device()
+    device = args.serial if args.serial else resolve_device()
     install_apk(device, args.apk)
     # Try to launch main activity
     activity = resolve_main_activity(args.project, args.apk)
