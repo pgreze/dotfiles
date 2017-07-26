@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# Script used for init this repository.
+# One shot script.
+# TODO: support "wget http://init | sh"
+# TODO: migrate from git submodule to repo?
 
 SCRIPT_PATH=${0%/*}
 cd "$SCRIPT_PATH"
