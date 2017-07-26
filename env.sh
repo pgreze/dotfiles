@@ -15,4 +15,4 @@ export PYTHONSTARTUP=~/.pythonrc
 # Android with homebrew
 export ANDROID_HOME=/usr/local/opt/android-sdk
 export ANDROID_SDK=$ANDROID_HOME
-export ANDROID_NDK=/usr/local/opt/android-sdk/ndk-bundle/
+export ANDROID_NDK=$ANDROID_HOME/ndk-bundle/
