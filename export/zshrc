@@ -112,5 +112,5 @@ fi
 ## Ending ##
 ##        ##
 
-source "$HOME/.my/main"
+source "$HOME/.my/main.sh"
 

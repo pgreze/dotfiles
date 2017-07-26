@@ -31,4 +31,5 @@ if [[ "$(uname)" == 'Darwin' ]]; then
 fi
 
 # Specific host conf if exists
-source_if_exists "$HOME/.my/local.sh"
+source_if_exists "$HOME/.my/local.sh" ||
+    echo ">> You can specify $HOME/.my/local.sh for local configuration"
