@@ -1,30 +1,8 @@
-
 ###
-### Contains common functions / alias used with command line or in scripts
+### Contains common functions / aliases
+### used with command line or in scripts.
+### Content from ./env.sh was loaded at this point.
 ###
-
-##
-## Base
-##
-
-# &> redirect all output
-function command_exists {
-    type "$1" &> /dev/null ;
-}
-
-function source_if_exists {
-    # Usage: source_if_exists script.sh
-    # Usage: source_if_exists condition.file script.sh
-
-    [ -z $2 ] && 2=$1
-    # Test if file or symbolic link exists
-    [ -e $1 ] || [ -L $1 ] && source $2
-}
-
-function exec_if_exists {
-    [ -z $2 ] && 2=$1
-    command_exists $1 && $2
-}
 
 ##
 ## General
@@ -111,7 +89,7 @@ function icons_android {
 
 function android_take_picture {
     if [ -z $1 ];then
-        echo "Missing destination path" >&2 
+        echo "Missing destination path" >&2
         return
     fi
     if [ $(adb devices | grep device | wc -l) -lt 1 ];then
