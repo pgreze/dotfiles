@@ -26,5 +26,9 @@ source "$HOME/.my/env.sh"
 # Import main resources
 source "$HOME/.my/common.sh"
 
+if [[ "$(uname)" == 'Darwin' ]]; then
+    source "$HOME/.my/osx.sh"
+fi
+
 # Specific host conf if exists
 source_if_exists "$HOME/.my/local.sh"
