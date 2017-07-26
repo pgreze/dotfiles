@@ -1,16 +1,26 @@
 #!/usr/bin/env bash
-# Script used for init this repository.
-# One shot script.
-# TODO: support "wget http://init | sh"
-# TODO: migrate from git submodule to repo?
+# Init dotfiles environment.
 
-SCRIPT_PATH=${0%/*}
-cd "$SCRIPT_PATH"
+# Install oh-my-zsh
+[ -d ~/.oh-my-zsh ] || (
+    curl -L http://install.ohmyz.sh | sh
+)
 
-echo ">> Init/update git submodule(s)"
-git submodule init
-git submodule update
+# Install homebrew
+[[ "$(uname)" == 'Darwin' ]] && (type brew &> /dev/null ||
+    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+)
 
+if [ -d $HOME/.my ];then
+    echo "dotfiles already found..."
+    exit 1
+fi
+
+git clone --recursive https://github.com/pgreze/dotfiles ~/.my
+
+# Go to dotfiles directory
+pushd ~/.my
+# And link all ./exports/* -> ~/.*
 echo ">> Export dotfiles from $PWD"
 prefix=$(date +%s)
 for i in export/*;do
@@ -26,5 +36,6 @@ for i in export/*;do
     echo "$abspath -> $target"
     ln -s "$abspath" "$target"
 done
+popd
 
-cd - > /dev/null
+echo ">> dotfiles installed :D"
