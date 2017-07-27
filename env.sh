@@ -4,6 +4,8 @@
 
 # Editor
 export EDITOR="/usr/bin/vim"
+# Warning: if Visual studio code is not from homebrew and PATH injected in local.sh,
+# This test will probably be wrong at this time
 command_exists code && export EDITOR=code
 
 # Add internal bin folder
