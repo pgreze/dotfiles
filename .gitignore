@@ -1,2 +1,5 @@
 export/vim/.netrwhist
+# Local config
 local.sh
+# Visual studio code folder
+.code
