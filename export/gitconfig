@@ -36,7 +36,7 @@
 	# used with git clone http://localhost:1234/
 
 [push]
-	default = simple
+	default = current
 [merge]
 	tool = vimdiff
 [pull]
