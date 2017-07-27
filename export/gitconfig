@@ -18,6 +18,8 @@
 	st = status -sb
 	df = diff --word-diff
 	ri = rebase -i --preserve-merges
+	# Don't force if someone already push new changes
+	pushf = push --force-with-lease
 	# Nice logs
 	lg = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(yellow)%h%C(reset)%C(auto)%d%C(reset) %C(green)(%ar)%C(reset) %C(white)%s%C(reset)'
 	# serve for read only
