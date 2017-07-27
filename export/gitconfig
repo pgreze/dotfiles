@@ -16,25 +16,15 @@
 	editor = vim
 [alias]
 	st = status -sb
-	ci = commit
-	br = branch
-	co = checkout
-	sh = show
-	sth = stash
-	pr = pull --rebase=preserve
 	df = diff --word-diff
 	ri = rebase -i --preserve-merges
-
-	# lg -p for changed lines, see https://coderwall.com/p/euwpig
-	l = log -M --decorate --graph --oneline
+	# Nice logs
 	lg = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(yellow)%h%C(reset)%C(auto)%d%C(reset) %C(green)(%ar)%C(reset) %C(white)%s%C(reset)'
-
 	# serve for read only
 	serve = !git daemon --base-path=. --export-all --reuseaddr --informative-errors --verbose
 	# hub for read-write 
 	hub = !git daemon --base-path=. --export-all --enable=receive-pack --reuseaddr --informative-errors --verbose
 	# used with git clone http://localhost:1234/
-
 [push]
 	default = current
 [merge]
