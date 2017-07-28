@@ -50,8 +50,7 @@ function spull {
     # - clean all previous work (with update -f).
     branch=$(git symbolic-ref --short HEAD)
 
-    git co $GIT_DEVELOP &&
-        git pull &&
+    gco $GIT_DEVELOP && gl &&
         git submodule sync --recursive &&
         git submodule update --init --recursive -f
 
