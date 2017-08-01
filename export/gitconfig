@@ -20,6 +20,9 @@
 	ri = rebase -i --preserve-merges
 	# Don't force if someone already push new changes
 	pushf = push --force-with-lease
+	# Pull with submodule force update as well
+	# Be careful, all current work in submodule will be lost
+	spull = !git pull && git submodule sync --recursive && git submodule update --init --recursive -f
 	# Nice logs
 	lg = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(yellow)%h%C(reset)%C(auto)%d%C(reset) %C(green)(%ar)%C(reset) %C(white)%s%C(reset)'
 	# serve for read only
