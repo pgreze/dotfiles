@@ -28,4 +28,5 @@ brew cask install libreoffice skype electrum virtualbox cyberduck
 
 ## Todo
 
+- Auto update mechanism like oh-my-zsh [check-for-upgrade](https://github.com/robbyrussell/oh-my-zsh/blob/master/tools/check_for_upgrade.sh) and [upgrade](https://github.com/robbyrussell/oh-my-zsh/blob/master/tools/upgrade.sh) combo.
 - Migrate from submodule to [subrepo](https://github.com/ingydotnet/git-subrepo)
