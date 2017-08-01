@@ -10,9 +10,9 @@ function command_exists {
 
 # Usage: source_if_exists [condition.file] script.sh
 function source_if_exists {
-    [ -z $2 ] && 2=$1
+    [ -z $2 ] && file=$1 || file=$2
     # Test if file or symbolic link exists
-    [ -e $1 ] || [ -L $1 ] && source $2
+    [ -e $1 ] || [ -L $1 ] && source $file
 }
 
 # Welcome output
