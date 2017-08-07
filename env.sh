@@ -15,6 +15,8 @@ export PATH="$HOME/.my/bin:$PATH"
 export PYTHONSTARTUP=~/.pythonrc
 
 # Android with homebrew
-export ANDROID_HOME=/usr/local/opt/android-sdk
-export ANDROID_SDK=$ANDROID_HOME
-export ANDROID_NDK=$ANDROID_HOME/ndk-bundle/
+if [ -z $ANDROID_HOME ] && [ -d /usr/local/opt/android-sdk ]; then
+    export ANDROID_HOME=/usr/local/opt/android-sdk
+    export ANDROID_SDK=$ANDROID_HOME
+    export ANDROID_NDK=$ANDROID_HOME/ndk-bundle/
+fi
