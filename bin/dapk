@@ -74,7 +74,7 @@ def install_apk(device, apk_path):
     print("Upload apk")
     subprocess.run(f"adb -s {device} push".split() + [apk_path, temp_apk])
     print("Install")
-    subprocess.run(f"adb -s {device} shell pm install -r".split() + [temp_apk])
+    subprocess.run(f"adb -s {device} shell pm install -d -r".split() + [temp_apk])
     # Finally delete apk
     subprocess.run(f"adb -s {device} shell rm".split() + [temp_apk])
 
