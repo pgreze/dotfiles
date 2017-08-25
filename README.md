@@ -1,6 +1,6 @@
 # dotfiles
 
-Another dotfiles project.
+Yet Another Dotfiles project.
 
 ## Installation
 
