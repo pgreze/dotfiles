@@ -21,8 +21,8 @@ Homebrew cask:
 
 ```bash
 brew cask doctor
-brew cask install java android-sdk
-brew cask install the-unarchiver mplayerx qlmarkdown android-file-transfer
+brew cask install the-unarchiver mplayerx qlmarkdown google-backup-and-sync android-file-transfer
+brew cask install java android-sdk android-studio
 brew cask install libreoffice skype electrum virtualbox cyberduck
 ```
 
