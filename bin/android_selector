@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+
+"""usage: android_selector [drawables]
+
+Generate a selector file for provided drawables.
+Example: android_selector chatroom_ic_back chatroom_ic_back_pressed chatroom_ic_back_selected
+
+Drawable names have to use the same convention than example.
+Only first drawable is mandatory, that's the default one (not enabled and not pressed).
+
+Output directory could be provided with DRAWABLE environment variable. Default is res/drawable.\
+"""
+
+__author__ = "Pierrick Greze (github: @pgreze)"
+__license__ = "LGPL"
+__version__ = "1.0"
+
+
+import sys
+import os
+from functools import reduce
+from itertools import takewhile
+
+
+# Look for the the provided strings common prefix
+base_prefix = lambda strings: reduce(
+    lambda s1, s2: "".join(i[0] for i in takewhile(lambda c: c[0] == c[1], zip(s1, s2))),
+    strings)
+
+
+if __name__ == '__main__':
+    if len(sys.argv) <= 1 or sys.argv[1] in ('-h', '--help'):
+        exit(__doc__)
+
+    args = sys.argv[1:]
+    output = os.getenv('DRAWABLE', 'res/drawable')
+    base = base_prefix(args)
+
+    content = '''<?xml version="1.0" encoding="UTF-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">'''
+    for drawable in args[1:]:
+        if 'pressed' in drawable:
+            content += f'''
+    <item android:state_pressed="true" android:drawable="@drawable/{drawable}" />'''
+        elif 'selected' in drawable:
+            content += f'''
+    <item android:state_selected="true" android:drawable="@drawable/{drawable}" />'''
+
+    # Default drawable
+    content += '''
+    <item android:state_enabled="false" android:drawable="@drawable/{normal}" />
+    <item android:drawable="@drawable/{normal}" />
+</selector>\n'''.format(normal=args[0])
+
+    filepath = '%s/%s_selector.xml' % (output, base.strip('_'))
+    print(">> Write %s: \n%s" % (filepath, content))
+    with open(filepath, mode='w') as f:
+        f.write(content)
