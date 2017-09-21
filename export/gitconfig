@@ -36,3 +36,5 @@
 	# Preserve to keep local merges
 	# See http://www.git-attitude.fr/2014/05/04/bien-utiliser-git-merge-et-rebase/#le-cas%20%C3%A9pineux%20du%20pull%20qui%20rebase%20un%20merge%20local
 	rebase = preserve
+[branch]
+	autoSetupMerge = always
