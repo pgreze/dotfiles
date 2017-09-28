@@ -19,7 +19,7 @@ HIST_STAMPS="yyyy-mm-dd"
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-plugins=(git autoenv battery brew brew-cask cp django golang fabric osx pip postgres python virtualenv virtualenvwrapper autojump git-flow adb)
+plugins=(git battery brew brew-cask cp golang osx pip python virtualenv autojump git-flow adb npm yarn)
 # autoenv: automaticly execs script on changing dir (.env file)
 # cp: cp with progression "cpv"
 
