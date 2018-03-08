@@ -13,7 +13,7 @@
 	diff = auto
 	status = auto
 [core]
-	editor = code --wait
+	editor = vim
 [alias]
 	st = status -sb
 	df = diff --word-diff
