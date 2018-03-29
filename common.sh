@@ -42,6 +42,7 @@ function extract {
 alias gs='git st'
 alias gd='git diff'
 alias spull='git spull'
+alias gcf='git commit --fixup'
 alias gcaf='git commit -a --fixup'
 
 ##
