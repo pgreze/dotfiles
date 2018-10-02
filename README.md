@@ -21,7 +21,7 @@ Homebrew cask:
 
 ```bash
 brew cask doctor
-brew cask install the-unarchiver mplayerx qlmarkdown google-backup-and-sync iterm2 keepassxc
+brew cask install the-unarchiver mplayerx qlmarkdown google-backup-and-sync iterm2 keepassxc flux
 brew cask install java android-sdk android-studio
 brew cask install android-file-transfer libreoffice skype electrum virtualbox cyberduck
 ```
