@@ -23,6 +23,7 @@ Homebrew cask:
 brew cask doctor
 brew cask install the-unarchiver mplayerx qlmarkdown google-backup-and-sync keepassxc flux
 brew cask install iterm2 visual-studio-code java android-sdk android-studio
+sudo pip3 install adb-enhanced # https://github.com/ashishb/adb-enhanced
 brew cask install android-file-transfer libreoffice skype electrum virtualbox cyberduck
 ```
 
