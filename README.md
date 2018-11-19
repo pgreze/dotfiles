@@ -27,6 +27,20 @@ sudo pip3 install adb-enhanced # https://github.com/ashishb/adb-enhanced
 brew cask install android-file-transfer libreoffice skype electrum virtualbox cyberduck
 ```
 
+## SSH keys
+
+After enabling *remote login* in *Sharing* preferences,
+enable cross auto-login between old and new PCs:
+
+```bash
+# On previous PC
+ssh user@new_pc mkdir .ssh
+scp ~/.ssh/config ~/.ssh/id_rsa* user@new_pc:.ssh
+ssh-copy-id -i ~/.ssh/id_rsa.pub user@new_pc
+# On new PC
+ssh-copy-id -i ~/.ssh/id_rsa.pub user@old_pc
+```
+
 ## Todo
 
 - Auto update mechanism like oh-my-zsh [check-for-upgrade](https://github.com/robbyrussell/oh-my-zsh/blob/master/tools/check_for_upgrade.sh) and [upgrade](https://github.com/robbyrussell/oh-my-zsh/blob/master/tools/upgrade.sh) combo.
