@@ -44,6 +44,14 @@ alias gd='git diff'
 alias spull='git spull'
 alias gcf='git commit --fixup'
 alias gcaf='git commit -a --fixup'
+function psed {
+    # https://stackoverflow.com/a/12056944
+    if [[ $# -eq 0 ]] ; then
+        echo "Usage: git psed old_method_name new_method_name"
+        exit 0
+    fi
+    git grep --null --full-name --name-only --perl-regexp -e "$1" | xargs -0 perl -i -p -e "s/$1/$2/g"
+}
 
 ##
 ## Python
