@@ -41,6 +41,17 @@ ssh-copy-id -i ~/.ssh/id_rsa.pub user@new_pc
 ssh-copy-id -i ~/.ssh/id_rsa.pub user@old_pc
 ```
 
+## (OSX) Change screenshots location
+
+Before:
+```
+defaults write com.apple.screencapture location "/Users/pgreze/Drive/Screenshots/"
+killall SystemUIServer
+```
+
+Now press Command+Shift+5 and change it in screenshot app:
+![](https://www.howtogeek.com/wp-content/uploads/2019/01/img_5c521fdaac323.jpg.pagespeed.ce.WG_Ijkk6kr.jpg)
+
 ## Todo
 
 - Auto update mechanism like oh-my-zsh [check-for-upgrade](https://github.com/robbyrussell/oh-my-zsh/blob/master/tools/check_for_upgrade.sh) and [upgrade](https://github.com/robbyrussell/oh-my-zsh/blob/master/tools/upgrade.sh) combo.
