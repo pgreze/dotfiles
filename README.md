@@ -41,6 +41,10 @@ ssh-copy-id -i ~/.ssh/id_rsa.pub user@new_pc
 ssh-copy-id -i ~/.ssh/id_rsa.pub user@old_pc
 ```
 
+## References
+
+- [the-art-of-command-line](https://github.com/jlevy/the-art-of-command-line) for all shiny tools.
+
 ## (OSX) Change screenshots location
 
 Before:
