@@ -46,11 +46,14 @@ alias gcf='git commit --fixup'
 alias gcaf='git commit -a --fixup'
 function psed {
     # https://stackoverflow.com/a/12056944
-    if [[ $# -eq 0 ]] ; then
-        echo "Usage: git psed old_method_name new_method_name"
-        exit 0
+    if [[ $# < 2 ]] ; then
+        echo "Usage: $0 \"search_reg\" \"replace_reg\" [\"<pathspec>\"...]"
+        return 1
     fi
-    git grep --null --full-name --name-only --perl-regexp -e "$1" | xargs -0 perl -i -p -e "s/$1/$2/g"
+    local search_reg="$1"
+    local replace_reg="$2"
+    local pathspecs="${@:3}"
+    git grep --null --full-name --name-only --perl-regexp -e "$search_reg" $pathspecs | xargs -0 perl -i -p -e "s:$search_reg:$replace_reg:g"
 }
 
 ##
