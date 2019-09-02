@@ -18,7 +18,7 @@
 [alias]
 	st = status -sb
 	df = diff --word-diff
-	ri = rebase -i --preserve-merges
+	ri = rebase -i --rebase-merges
 	# Don't force if someone already push new changes
 	pushf = push --force-with-lease
 	# Pull with submodule force update as well
