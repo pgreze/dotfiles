@@ -23,7 +23,7 @@ echo "+ $(uptime)"
 # Configure env
 source "$HOME/.my/env.sh"
 
-# Import main resources
+# Import common resources
 source "$HOME/.my/common.sh"
 
 if [[ "$(uname)" == 'Darwin' ]]; then

@@ -8,6 +8,16 @@
 ## General
 ##
 
+function cdmk {
+    if [ $# -eq 0 ]; then
+        echo "Usage: $0 [-p] dir[/...]"
+        return 1
+    else
+        mkdir $*
+        cd ${@: -1}
+    fi
+}
+
 function ping_with_date {
     local addr='8.8.8.8'
     if [ ! -z $@ ];then addr="$@";fi
