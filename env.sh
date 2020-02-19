@@ -20,3 +20,7 @@ if [ -z $ANDROID_HOME ] && [ -d /usr/local/opt/android-sdk ]; then
     export ANDROID_SDK=$ANDROID_HOME
     export ANDROID_NDK=$ANDROID_HOME/ndk-bundle/
 fi
+
+# Includes third party plugins
+source "$HOME/.my/third_party/git-subrepo/.rc"
+export PATH="$HOME/.my/third_party/gdub/bin/:$PATH"
