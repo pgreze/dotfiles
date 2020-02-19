@@ -14,7 +14,7 @@ Homebrew:
 brew doctor
 brew install coreutils findutils wget rename tree ncdu htop autojump tmux
 brew install python3 latex2rtf mkvtoolnix irssi ffmpeg
-brew install git git-flow git-subrepo gcc cmake gdub
+brew install git git-flow gcc cmake
 ```
 
 Homebrew cask:
