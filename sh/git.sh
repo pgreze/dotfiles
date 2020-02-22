@@ -2,8 +2,11 @@
 ### Git configuration
 ###
 
+unalias g
+unalias gg
 alias gs='git st'
 alias gd='git diff'
+alias gg='git lg'
 alias spull='git spull'
 alias gcf='git commit --fixup'
 alias gcaf='git commit -a --fixup'
