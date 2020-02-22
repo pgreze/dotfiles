@@ -1,0 +1,56 @@
+#!/usr/bin/env zsh
+
+zmodload zsh/datetime
+
+function help {
+  echo "Usage: $0 [cache-name]\n\n" \
+    "With optional variables with default:\n" \
+    "  UPDATE_DISABLE_PROMPT=false asking confirmation before update\n" \
+    "  UPDATE_INTERVAL_DAYS=13 interval between 2 updates\n"
+}
+
+CACHE_NAME="$1"
+
+CACHE_FOLDER="$DOTFILES/.cache"
+CACHE_FILE="$CACHE_FOLDER/$CACHE_NAME-interval"
+CACHE_LOCK="$CACHE_FOLDER/$CACHE_NAME.lock"
+
+if [ $# -eq 0 ]; then
+  help
+  exit 1
+fi
+
+if [ -z $UPDATE_INTERVAL_DAYS ]; then
+  UPDATE_INTERVAL_DAYS=13
+fi
+
+function _current_epoch {
+  echo $(( $EPOCHSECONDS / 60 / 60 / 24 ))
+}
+
+UPDATE_RETURN=1
+
+mkdir -p "$CACHE_FOLDER"
+if mkdir "$CACHE_LOCK" 2>/dev/null; then
+  if [ -f "$CACHE_FILE" ]; then
+    last_epoch=$(cat "$CACHE_FILE")
+    epoch_diff=$(($(_current_epoch) - $last_epoch))
+    if [ $epoch_diff -gt $UPDATE_INTERVAL_DAYS ]; then
+      if [ "$UPDATE_DISABLE_PROMPT" = "true" ]; then
+        UPDATE_RETURN=0
+      else
+        echo "[Auto update] Would you like to update $CACHE_NAME? [Y/n]: \c"
+        read line
+        if [[ "$line" == Y* ]] || [[ "$line" == y* ]] || [ -z "$line" ]; then
+          UPDATE_RETURN=0
+        fi
+      fi
+    fi
+  fi
+
+  _current_epoch >! "$CACHE_FILE"
+
+  rmdir "$CACHE_LOCK"
+fi
+
+exit $UPDATE_RETURN

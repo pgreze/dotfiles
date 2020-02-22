@@ -31,6 +31,7 @@
 	# hub for read-write 
 	hub = !git daemon --base-path=. --export-all --enable=receive-pack --reuseaddr --informative-errors --verbose
 	# used with git clone http://localhost:1234/
+	current-branch=rev-parse --abbrev-ref HEAD
 [push]
 	default = current
 [pull]

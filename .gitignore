@@ -3,3 +3,5 @@ export/vim/.netrwhist
 local.sh
 # Visual studio code folder
 .vscode
+# Cache folder, inspired by oh-my-zsh
+.cache
