@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Init dotfiles environment.
+###
+### Install dotfiles environment.
+###
 
 # Install oh-my-zsh
 [ -d ~/.oh-my-zsh ] || (

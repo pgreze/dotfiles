@@ -5,7 +5,7 @@ Yet Another Dotfiles project.
 ## Installation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/pgreze/dotfiles/master/init | sh
+curl -fsSL https://raw.githubusercontent.com/pgreze/dotfiles/master/install.sh | sh
 ```
 
 Homebrew:

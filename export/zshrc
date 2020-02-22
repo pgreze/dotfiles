@@ -112,5 +112,5 @@ fi
 ## Ending ##
 ##        ##
 
-source "$HOME/.my/main.sh"
+source "$HOME/.my/dotfiles.sh"
 
