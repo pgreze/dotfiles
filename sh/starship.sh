@@ -5,7 +5,7 @@
 
 function init_starship {
   # Install if not loaded + missing in path
-  if [ -z "$STARSHIP_SHELL" ] && [ ! command_exists starship ]; then
+  if [ -z "$STARSHIP_SHELL" ] && ! command -v starship > /dev/null; then
     echo ">> Install starship"
     case "$OSTYPE" in
       darwin*) brew install starship ;;

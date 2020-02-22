@@ -1,5 +1,5 @@
 ###
-### General configuration
+### General functions, when scope is unclear.
 ###
 
 function cdmk {
