@@ -2,15 +2,14 @@
 ### General functions, when scope is unclear.
 ###
 
-function cdmk() {
-  if [ $# -eq 0 ]; then
-    echo "Usage: $0 [-p] dir[/...]"
-    return 1
+function mkcd {
+  if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    mkdir --help
   else
-    mkdir $*
-    cd ${@: -1}
+    mkdir $* && cd "${@: -1}"
   fi
 }
+alias cdmk=mkcd
 
 function ping_with_date() {
   local addr='8.8.8.8'
