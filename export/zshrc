@@ -12,9 +12,16 @@ ZSH_THEME="robbyrussell"
 # The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
 HIST_STAMPS="yyyy-mm-dd"
 
+# Ensure alias-tips is available
+ALIAS_TIPS_LINK="$ZSH/plugins/alias-tips"
+if [ ! -f "$ALIAS_TIPS_LINK" ]; then
+    ln -s "$HOME/.my/third_party/alias-tips" "$ALIAS_TIPS_LINK"
+fi
+unset ALIAS_TIPS_LINK
+
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-plugins=(git battery brew brew-cask cp golang osx pip python virtualenv autojump git-flow adb npm yarn)
+plugins=(git battery brew brew-cask cp golang osx pip python virtualenv autojump git-flow adb npm yarn alias-tips)
 # autoenv: automaticly execs script on changing dir (.env file)
 # cp: cp with progression "cpv"
 
