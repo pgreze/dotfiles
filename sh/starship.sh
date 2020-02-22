@@ -19,16 +19,24 @@ function init_starship {
 function generate_starship_config {
   local config_file="$HOME/.config/starship.toml"
   mkdir -p "$HOME/.config"
+  # Common
+  cat > $config_file <<EOF
+add_newline = true
+
+[git_branch]
+symbol = ""
+
+EOF
   # OS specific
   case "$OSTYPE" in
-    darwin*) cat > $config_file <<EOF
+    darwin*) cat >> $config_file <<EOF
 [character]
 symbol = "🍏 ➜ "
 error_symbol = "🍎 ➜ "
 use_symbol_for_status = true
 EOF
     ;;
-    linux*) cat > $config_file <<EOF
+    linux*) cat >> $config_file <<EOF
 [character]
 symbol = "🐧 ➜ "
 error_symbol = "🧨 ➜ "
@@ -36,12 +44,6 @@ use_symbol_for_status = true
 EOF
     ;;
   esac
-  # Common
-  cat > $config_file <<EOF
-
-[git_branch]
-symbol = ""
-EOF
 }
 
 # https://starship.rs/guide/#getting-started
