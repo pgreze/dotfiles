@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+
+set -e
+
+cd $DOTFILES
+
+if [[ $(git diff --stat) != '' ]] || [[ $(git current-branch) != 'master' ]]; then
+  echo "Invalid $DOTFILES environment, stop update"
+  exit 1
+fi
+
+git pull origin master
+
+if [ "$1" = '--all' ]; then
+  git subrepo pull --all
+  git push origin master
+fi
