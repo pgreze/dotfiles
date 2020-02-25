@@ -26,6 +26,9 @@ add_newline = true
 [git_branch]
 symbol = ""
 
+[java]
+style="bold red"
+
 EOF
   # OS specific
   case "$OSTYPE" in
