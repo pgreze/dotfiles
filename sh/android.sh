@@ -64,3 +64,5 @@ function android_take_picture {
     adb pull /sdcard/screenshot.png "$1"
     adb shell "rm /sdcard/screenshot.png"
 }
+
+alias adb_install_work='adb -d install --user $(adb -d shell pm list users | grep Work | grep -oE "[0-9]+" | head -n 1)'
