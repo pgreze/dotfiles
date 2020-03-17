@@ -27,6 +27,14 @@ sudo pip3 install adb-enhanced # https://github.com/ashishb/adb-enhanced
 brew cask install android-file-transfer libreoffice skype electrum virtualbox cyberduck
 ```
 
+Others:
+
+```
+# To expose ftp server with:
+# python3 -m pyftpdlib
+pip3 install pyftpdlib
+```
+
 ## SSH keys
 
 After enabling *remote login* in *Sharing* preferences,
