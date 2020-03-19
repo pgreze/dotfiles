@@ -10,6 +10,7 @@ alias gg='git lg'
 alias spull='git spull'
 alias gcf='git commit --fixup'
 alias gcaf='git commit -a --fixup'
+alias gdm='git diff master'
 
 function psed {
     # https://stackoverflow.com/a/12056944
