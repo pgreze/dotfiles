@@ -27,7 +27,7 @@ alias adb_restart='adb kill-server && sudo adb devices'
 function set_android_jdk {
     local android_studio="$1"
     if [ -z $android_studio ]; then
-        android_studio="/Applications/Android\ Studio.app/"
+        android_studio="/Applications/Android Studio.app/"
     fi
     export JAVA_HOME="$android_studio/Contents/jre/jdk/Contents/Home"
 }
