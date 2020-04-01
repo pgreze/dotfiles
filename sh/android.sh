@@ -2,16 +2,35 @@
 ### Android configuration
 ###
 
-# Android with homebrew
-if [ -z $ANDROID_HOME ] && [ -d /usr/local/opt/android-sdk ]; then
-    export ANDROID_HOME=/usr/local/opt/android-sdk
-    export ANDROID_SDK=$ANDROID_HOME
-    export ANDROID_NDK=$ANDROID_HOME/ndk-bundle/
+function setup_android_home {
+    if [ -z $ANDROID_HOME ] && [ -d "$1" ]; then
+        export ANDROID_HOME="$1"
+        export ANDROID_SDK="$ANDROID_HOME"
+        export ANDROID_NDK="$ANDROID_HOME/ndk-bundle/"
+    fi
+}
+setup_android_home "$HOME/Library/Android/sdk"    # Default Android Studio location
+setup_android_home "/usr/local/share/android-sdk" # Homebrew cask
+setup_android_home "/usr/local/opt/android-sdk"   # 🤷
+if [ -z $ANDROID_HOME ]; then
+    echo "ANDROID_HOME not found" 1>&2
 fi
 
+###
+### Alias and functions
+###
+
 alias adb_restart='adb kill-server && sudo adb devices'
-# Start monitor (hierarchyviewer, etc) and restart adb at the end (monitor issue?)
-alias monitor='/usr/local/bin/monitor; adb_restart'
+
+# Solving "Daemon could not be reused"
+# https://twitter.com/chrisbanes/status/1244613598284054528
+function set_android_jdk {
+    local android_studio="$1"
+    if [ -z $android_studio ]; then
+        android_studio="/Applications/Android\ Studio.app/"
+    fi
+    export JAVA_HOME="$android_studio/Contents/jre/jdk/Contents/Home"
+}
 
 function icons_android {
     local dim="$1"
