@@ -14,7 +14,7 @@ Homebrew:
 brew doctor
 brew install coreutils findutils wget rename tree ncdu htop autojump tmux thefuck
 brew install python3 latex2rtf mkvtoolnix irssi ffmpeg
-brew install git git-flow gcc cmake
+brew install git git-subrepo git-flow gcc cmake
 brew install exa procs bat ripgrep bat ripgrep dust bandwhich miniserve
 # TODO: kibi fdfind ytop licensor
 ```
@@ -76,9 +76,3 @@ killall SystemUIServer
 
 Now press Command+Shift+5 and change it in screenshot app:
 ![](https://www.howtogeek.com/wp-content/uploads/2019/01/img_5c521fdaac323.jpg.pagespeed.ce.WG_Ijkk6kr.jpg)
-
-## Todo
-
-- Auto update mechanism like oh-my-zsh [check-for-upgrade](https://github.com/robbyrussell/oh-my-zsh/blob/master/tools/check_for_upgrade.sh) and [upgrade](https://github.com/robbyrussell/oh-my-zsh/blob/master/tools/upgrade.sh) combo.
-- Migrate from submodule to [subrepo](https://github.com/ingydotnet/git-subrepo)
-- use https://github.com/Peltoche/lsd
