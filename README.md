@@ -25,7 +25,7 @@ Homebrew cask:
 brew cask doctor
 brew cask install the-unarchiver vlc qlmarkdown google-backup-and-sync keepassxc flux
 brew cask install iterm2 visual-studio-code
-brew cask install java intellij-idea-ce android-sdk android-studio
+brew cask install java intellij-idea-ce android-sdk android-studio jd-gui
 brew cask install android-file-transfer libreoffice skype electrum virtualbox cyberduck
 ```
 
