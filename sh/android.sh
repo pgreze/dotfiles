@@ -14,6 +14,8 @@ setup_android_home "/usr/local/share/android-sdk" # Homebrew cask
 setup_android_home "/usr/local/opt/android-sdk"   # 🤷
 if [ -z $ANDROID_HOME ]; then
     echo "ANDROID_HOME not found" 1>&2
+else
+    export PATH="$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH"
 fi
 
 ###
