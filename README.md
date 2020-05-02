@@ -16,7 +16,6 @@ brew install coreutils findutils wget rename tree ncdu htop autojump tmux thefuc
 brew install python3 latex2rtf mkvtoolnix irssi ffmpeg
 brew install git git-subrepo git-flow gcc cmake
 brew install exa procs bat ripgrep bat ripgrep dust bandwhich miniserve
-brew install java11
 # TODO: kibi fdfind ytop licensor
 ```
 
@@ -28,6 +27,9 @@ brew cask install the-unarchiver vlc qlmarkdown google-backup-and-sync keepassxc
 brew cask install iterm2 visual-studio-code
 brew cask install java intellij-idea-ce android-sdk android-studio jd-gui
 brew cask install android-file-transfer libreoffice skype electrum virtualbox cyberduck
+# https://github.com/AdoptOpenJDK/homebrew-openjdk
+brew tap AdoptOpenJDK/openjdk
+brew cask install adoptopenjdk8 adoptopenjdk11
 ```
 
 Others:
