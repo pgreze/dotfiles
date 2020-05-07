@@ -12,7 +12,7 @@ Homebrew:
 
 ```bash
 brew doctor
-brew install coreutils findutils wget rename tree ncdu htop autojump tmux thefuck
+brew install coreutils grep findutils wget rename tree ncdu htop autojump tmux thefuck
 brew install python3 latex2rtf mkvtoolnix irssi ffmpeg
 brew install git git-subrepo git-flow gcc cmake
 brew install exa procs bat ripgrep bat ripgrep dust bandwhich miniserve

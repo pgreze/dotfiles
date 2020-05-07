@@ -20,11 +20,15 @@ function osx_init {
     # Setup brew cask to install into /Applications folder.
     export HOMEBREW_CASK_OPTS='--appdir=/Applications';
 
-    # Promote gnu utils from homebrew
-    if [ -d /usr/local/opt/coreutils ];then
-        PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+    # Promote gnu tools from homebrew
+    local OPT_PATH="$(brew --prefix)/opt"
+    if [ -d "$OPT_PATH/coreutils" ]; then
+        PATH="$OPT_PATH/coreutils/libexec/gnubin:$PATH"
         # Fix ls alias when gnu utils are used
         alias ls='ls --color'
+    fi
+    if [ -d "$OPT_PATH/grep" ]; then
+        PATH="$OPT_PATH/grep/libexec/gnubin:$PATH"
     fi
 
     # Fix encoding annoyances with less. See configuration with "locale" command.
