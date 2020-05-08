@@ -21,7 +21,7 @@ if [ $# -eq 0 ]; then
 fi
 
 if [ -z $UPDATE_INTERVAL_DAYS ]; then
-  UPDATE_INTERVAL_DAYS=13
+  UPDATE_INTERVAL_DAYS=3
 fi
 
 function _current_epoch {
