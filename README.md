@@ -17,6 +17,7 @@ brew install python3 latex2rtf mkvtoolnix irssi ffmpeg
 brew install git git-subrepo git-flow gcc cmake
 brew install exa procs bat ripgrep bat ripgrep dust bandwhich miniserve
 # TODO: kibi fdfind ytop licensor
+brew install mas # https://github.com/mas-cli/mas 📦 Mac App Store command line interface
 ```
 
 Homebrew cask:
