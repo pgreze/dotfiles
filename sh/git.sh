@@ -39,3 +39,25 @@ function pr_merged {
     git pull origin "$base_branch"
     git branch -D "$current_branch"
 }
+
+function gclone {
+    if [ -z "$1" ]; then
+        echo 2>&1 "Usage: $0 git@remote:your-repo.git"
+        echo 2>&1
+        echo 2>&1 "This command is cloning a git repo AND cd to the newly created directory."
+        return 0
+    fi
+    # Clone repository.
+    LOGS="$(mktemp)"
+    git clone --progress $* 2>&1 | tee $LOGS
+    # Resolve created folder and move in.
+    FOLDER=$(head -1 $LOGS | cut -d\' -f2)
+    if [ -z "$FOLDER" ]; then
+        echo 2>&1 "Could not resolve output directory"
+        return 1
+    fi
+    echo
+    echo "cd $(pwd)/$FOLDER"
+    cd $FOLDER
+    rm $LOGS > /dev/null
+}
