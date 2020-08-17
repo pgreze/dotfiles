@@ -16,6 +16,8 @@ brew install coreutils grep findutils wget rename tree ncdu htop autojump tmux t
 brew install python3 latex2rtf mkvtoolnix irssi ffmpeg
 brew install git git-subrepo git-flow gcc cmake
 brew install exa procs bat ripgrep bat ripgrep dust bandwhich miniserve
+# Python2 https://stackoverflow.com/a/60345962/5489877
+brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/86a44a0a552c673a05f11018459c9f5faae3becc/Formula/python@2.rb
 # TODO: kibi fdfind ytop licensor
 brew install mas # https://github.com/mas-cli/mas 📦 Mac App Store command line interface
 ```
