@@ -61,3 +61,14 @@ function gclone {
     cd $FOLDER
     rm $LOGS > /dev/null
 }
+
+git_diff_count() {
+    [ -z "${1:-}" ] && echo 2>&1 "Usage: $0 target-branch [base-branch]" && return 1
+    local base_branch="$1"
+    local target_branch="${2:-HEAD}"
+
+    local common_ancestor=$(git merge-base $base_branch $target_branch)
+    local target_count=$(git rev-list --count $target_branch)
+    local common_ancestor_count=$(git rev-list --count $common_ancestor)
+    echo $(( $target_count - $common_ancestor_count ))
+}
