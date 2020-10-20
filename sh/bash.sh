@@ -1,0 +1,10 @@
+###
+### Bash configuration
+###
+
+if [ $(which -a bash | grep /usr/local/bin/bash | wc -l) -ne 0 ] && \
+    [ $(grep /usr/local/bin/bash /etc/shells | wc -l) -eq 0 ]; then
+    echo "Consider adding the non default bash as available shell with:"
+    echo "sudo bash -c 'echo /usr/local/bin/bash >> /etc/shells'"
+    echo "See https://apple.stackexchange.com/a/291290"
+fi
