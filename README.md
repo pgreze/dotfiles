@@ -29,7 +29,7 @@ brew cask doctor
 brew cask install the-unarchiver vlc qlmarkdown google-backup-and-sync keepassxc flux
 brew cask install iterm2 visual-studio-code
 brew cask install android-sdk jetbrains-toolbox jd-gui # intellij-idea-ce android-studio
-brew cask install android-file-transfer libreoffice skype electrum virtualbox cyberduck
+brew cask install firefox android-file-transfer libreoffice skype electrum virtualbox cyberduck
 # https://github.com/AdoptOpenJDK/homebrew-openjdk
 brew tap AdoptOpenJDK/openjdk
 brew cask install adoptopenjdk8 adoptopenjdk11
