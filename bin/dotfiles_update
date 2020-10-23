@@ -9,9 +9,9 @@ if [ "$(git diff --stat)" != '' ] || [ "$(git current-branch)" != 'master' ]; th
   exit 1
 fi
 
-git pull origin master
+git pull origin main
 
 if [ "$1" = '--all' ]; then
   git subrepo pull --all
-  git push origin master
+  git push origin main
 fi
