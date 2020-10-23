@@ -5,7 +5,7 @@
 
 # Install oh-my-zsh
 [ -d ~/.oh-my-zsh ] || (
-    curl -L http://install.ohmyz.sh | sh
+    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 )
 
 # Install homebrew
