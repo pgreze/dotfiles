@@ -14,7 +14,14 @@
 	status = auto
 [core]
 	editor = vim
+    pager = delta
 	excludesfile = ~/.gitignore_global
+[delta] # https://github.com/dandavison/delta
+    plus-color = "#012800"
+    minus-color = "#340001"
+    syntax-theme = Monokai Extended
+[interactive]
+    diffFilter = delta --color-only
 [alias]
 	st = status -sb
 	df = diff --word-diff
