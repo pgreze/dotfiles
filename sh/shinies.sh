@@ -28,8 +28,3 @@ ps() {
     echo "Override grep with rg https://github.com/BurntSushi/ripgrep"
     rg "$@"
 }
-
-# Shiny tools I have not promoted:
-# https://github.com/bootandy/dust like ncdu but with percent
-# https://github.com/imsnif/bandwhich sudo listen all network calls
-# 
