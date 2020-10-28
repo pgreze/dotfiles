@@ -4,7 +4,7 @@ set -e
 
 cd $DOTFILES
 
-if [ "$(git diff --stat)" != '' ] || [ "$(git current-branch)" != 'master' ]; then
+if [ "$(git diff --stat)" != '' ] || [ "$(git current-branch)" != 'main' ]; then
   echo "Invalid $DOTFILES environment, stop update"
   exit 1
 fi
