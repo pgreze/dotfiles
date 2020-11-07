@@ -15,6 +15,8 @@ def aidea(project_dir: Optional[Path] = typer.Argument(None)):
     """
     Interactively ask which IDEA path to use to open a project,
     or display detected installations if no path is provided.
+
+    See https://github.com/pgreze/dotfiles/issues/4 for inspirations.
     """
     if not project_dir:
         for install_path, launcher in resolve_install_paths():
@@ -39,7 +41,7 @@ def aidea(project_dir: Optional[Path] = typer.Argument(None)):
         except Exception: # Filter all errors except ctrl+c
             continue
 
-    proc = subprocess.run(["open", "-na", selected_launcher, "--args", project_dir.absolute()])
+    proc = subprocess.run(["/usr/bin/open", "-na", selected_launcher, "--args", project_dir.absolute()])
     raise typer.Exit(proc.returncode)
 
 
