@@ -75,6 +75,13 @@ ssh-copy-id -i ~/.ssh/id_rsa.pub user@old_pc
   - https://github.com/imsnif/bandwhich
   - https://github.com/svenstaro/miniserve
   - https://github.com/raftario/licensor
+  
+## (OSX) How to Enable Key Repeating
+
+See [this article for details](https://www.howtogeek.com/267463/how-to-enable-key-repeating-in-macos/):
+```
+defaults write -g ApplePressAndHoldEnabled -bool false
+```
 
 ## (OSX) Change screenshots location
 
