@@ -10,6 +10,7 @@ function mkcd {
   fi
 }
 alias cdmk=mkcd
+alias cdd=mkcd
 
 function ping_with_date() {
   local addr='8.8.8.8'
