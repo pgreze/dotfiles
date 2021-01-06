@@ -42,14 +42,19 @@ function pr_merged {
 
 function gclone {
     if [ -z "$1" ]; then
-        echo 2>&1 "Usage: $0 git@remote:your-repo.git"
+        echo 2>&1 "Usage: $0 git@remote:user/repo.git"
+        echo 2>&1 "Usage: $0 user repo"
         echo 2>&1
         echo 2>&1 "This command is cloning a git repo AND cd to the newly created directory."
         return 0
+    elif [ ! -z "$2" ]; then
+        local repo="git@github.com:$1/$2.git"
+    else
+        local repo="$1"
     fi
     # Clone repository.
     LOGS="$(mktemp)"
-    git clone --progress $* 2>&1 | tee $LOGS
+    git clone --progress "${repo}" 2>&1 | tee $LOGS
     # Resolve created folder and move in.
     FOLDER=$(head -1 $LOGS | cut -d\' -f2)
     if [ -z "$FOLDER" ]; then
