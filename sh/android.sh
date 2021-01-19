@@ -26,11 +26,13 @@ alias adb_restart='adb kill-server && sudo adb devices'
 
 # Solving "Daemon could not be reused"
 # https://twitter.com/chrisbanes/status/1244613598284054528
-function set_android_jdk {
-    local android_studio="$1"
-    if [ -z $android_studio ]; then
-        android_studio="/Applications/Android Studio.app/"
+function android_set_jdk {
+    if [ -z "$1" ]; then
+        echo "Usage: $0 [android-sdk]. Available locations:"
+        aidea.py
+        return 0
     fi
+    local android_studio="$1"
     export JAVA_HOME="$android_studio/Contents/jre/jdk/Contents/Home"
 }
 
