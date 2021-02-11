@@ -47,3 +47,5 @@
 	rebase = preserve
 [branch]
 	autoSetupMerge = always
+[init]
+	defaultBranch = main
