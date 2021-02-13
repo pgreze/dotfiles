@@ -10,7 +10,7 @@ alias gg='git lg'
 alias spull='git spull'
 alias gcf='git commit --fixup'
 alias gcaf='git commit -a --fixup'
-alias gdm='git diff master'
+alias gdm='git diff $(git_main_branch)'
 
 function psed {
     # https://stackoverflow.com/a/12056944
@@ -26,7 +26,7 @@ function psed {
 
 # Common workflow after a PR was merged
 function pr_merged {
-    local base_branch="${1:-master}"
+    local base_branch="${1:-$(git_main_branch)}"
     local current_branch="$(git rev-parse --abbrev-ref HEAD)"
     if [ $(echo "$current_branch" | wc -l) != 1 ]; then
         echo "More than 1 current branch found: $current_branch" 1>&2
