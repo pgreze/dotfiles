@@ -27,16 +27,17 @@ function psed {
 # Common workflow after a PR was merged
 function pr_merged {
     local base_branch="${1:-$(git_main_branch)}"
-    local current_branch="$(git rev-parse --abbrev-ref HEAD)"
+    local current_branch="$(git_current_branch)"
     if [ $(echo "$current_branch" | wc -l) != 1 ]; then
         echo "More than 1 current branch found: $current_branch" 1>&2
         return 1
     elif [ "$current_branch" = "$base_branch" ]; then
         echo "Already on the base branch ($base_branch)" 1>&2
-        return 1
+        return 2
     fi
     git checkout "$base_branch"
     git pull origin "$base_branch"
+    git fetch origin
     git branch -D "$current_branch"
 }
 
