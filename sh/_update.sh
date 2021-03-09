@@ -15,6 +15,16 @@ dot-reload() {
 dot-up() {
   cd $DOTFILES
 
+  echo ">>>"
+  echo ">>> Upgrade oh-my-zsh"
+  echo ">>>"
+
+  "$ZSH/tools/upgrade.sh"
+
+  echo ">>>"
+  echo ">>> Upgrade dotfiles (use --all to also update subrepos)"
+  echo ">>>"
+
   if [ "$(git diff --stat)" != '' ] || [ "$(git current-branch)" != 'main' ]; then
     echo "Invalid $DOTFILES environment, stop update"
     popd > /dev/null
