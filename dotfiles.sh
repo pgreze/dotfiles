@@ -3,6 +3,10 @@
 ###
 
 export DOTFILES="$HOME/.my"
+alias dot-cd="cd $DOTFILES"
+
+export DOTCACHE="$DOTFILES/.cache"
+mkdir -p "$DOTCACHE"
 
 # Welcome output
 echo "     ~~~~~~~~ Welcome $USER@$HOST :3 ~~~~~~~~"

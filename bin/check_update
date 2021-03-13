@@ -11,9 +11,8 @@ function help {
 
 CACHE_NAME="$1"
 
-CACHE_FOLDER="$DOTFILES/.cache"
-CACHE_FILE="$CACHE_FOLDER/$CACHE_NAME-interval"
-CACHE_LOCK="$CACHE_FOLDER/$CACHE_NAME.lock"
+CACHE_FILE="$DOTCACHE/$CACHE_NAME-interval"
+CACHE_LOCK="$DOTCACHE/$CACHE_NAME.lock"
 
 if [ $# -eq 0 ]; then
   help
@@ -30,7 +29,6 @@ function _current_epoch {
 
 UPDATE_RETURN=1
 
-mkdir -p "$CACHE_FOLDER"
 if mkdir "$CACHE_LOCK" 2>/dev/null; then
   if [ -f "$CACHE_FILE" ]; then
     last_epoch=$(cat "$CACHE_FILE")
