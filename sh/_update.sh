@@ -17,6 +17,7 @@ dot-up() {
 
   if [ "$(git diff --stat)" != '' ] || [ "$(git current-branch)" != 'main' ]; then
     echo "Invalid $DOTFILES environment, stop update"
+    popd > /dev/null
     return 1
   fi
 
@@ -27,6 +28,7 @@ dot-up() {
     git push origin main
   fi
 
+  popd > /dev/null
   dot-reload
 }
 
