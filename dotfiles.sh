@@ -8,10 +8,7 @@ alias dot-cd="cd $DOTFILES"
 export DOTCACHE="$DOTFILES/.cache"
 mkdir -p "$DOTCACHE"
 
-# Welcome output
-echo "     ~~~~~~~~ Welcome $USER@$HOST :3 ~~~~~~~~"
-echo "+ $(uname -a)"
-echo "+ $(uptime)"
+export PATH="$DOTFILES/bin:$PATH"
 
 # Import all configuration files
 for file in $(ls $DOTFILES/sh/*.sh); do
