@@ -29,6 +29,12 @@ symbol = ""
 [java]
 style="bold red"
 
+[git_commit]
+disabled = true
+[git_state]
+disabled = true
+[git_status]
+disabled = true
 EOF
   # OS specific
   case "$OSTYPE" in
