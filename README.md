@@ -28,14 +28,14 @@ brew install mas # https://github.com/mas-cli/mas 📦 Mac App Store command lin
 Homebrew cask:
 
 ```bash
-brew cask doctor
-brew cask install the-unarchiver vlc qlmarkdown google-backup-and-sync keepassxc flux
-brew cask install iterm2 visual-studio-code
-brew cask install android-sdk jetbrains-toolbox jd-gui # intellij-idea-ce android-studio
-brew cask install firefox android-file-transfer libreoffice skype electrum virtualbox cyberduck
+brew install the-unarchiver vlc qlmarkdown google-backup-and-sync keepassxc flux
+brew install iterm2 visual-studio-code
+brew install android-sdk jetbrains-toolbox jd-gui # intellij-idea-ce android-studio
+brew install firefox android-file-transfer libreoffice skype electrum virtualbox cyberduck
 # https://github.com/AdoptOpenJDK/homebrew-openjdk
 brew tap AdoptOpenJDK/openjdk
-brew cask install adoptopenjdk8 adoptopenjdk11
+brew install adoptopenjdk8 adoptopenjdk11
+brew install docker docker-machine
 ```
 
 Others:
