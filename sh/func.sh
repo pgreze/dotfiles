@@ -2,7 +2,7 @@
 ### General functions, when scope is unclear.
 ###
 
-function mkcd {
+mkcd() {
   if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     mkdir --help
   else
@@ -12,13 +12,13 @@ function mkcd {
 alias cdmk=mkcd
 alias cdd=mkcd
 
-function ping_with_date() {
+pong() {
   local addr='8.8.8.8'
   if [ ! -z $@ ]; then addr="$@"; fi
   ping $addr | while read x; do echo "$(date +"%H:%M:%S"): $x"; done
 }
 
-function extract() {
+extract() {
   if [ -f $1 ]; then
     case $1 in
     *.tar.bz2) tar xjf $1 ;;
