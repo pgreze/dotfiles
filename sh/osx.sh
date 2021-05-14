@@ -2,6 +2,8 @@
 ### OSX configuration
 ###
 
+alias restart_backup_and_sync="killall Backup\ and\ Sync && sleep 10 && open -a /Applications/Backup\ and\ Sync.app"
+
 function osx_notification {
     if [ $# -eq 0 ]; then
         echo "Usage: $0 [text...]"
