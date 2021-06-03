@@ -38,7 +38,7 @@ function pr_merged {
     fi
     git checkout "$base_branch"
     git pull origin "$base_branch"
-    git fetch origin
+    git fetch -p origin
     git branch -D "$current_branch"
 }
 
