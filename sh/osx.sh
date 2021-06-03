@@ -2,6 +2,8 @@
 ### OSX configuration
 ###
 
+export PATH="/usr/local/opt/curl/bin:$PATH"
+
 alias restart_backup_and_sync="killall Backup\ and\ Sync && sleep 10 && open -a /Applications/Backup\ and\ Sync.app"
 
 function osx_notification {
