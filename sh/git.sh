@@ -12,6 +12,7 @@ alias gcf='git commit --fixup'
 alias gcaf='git commit -a --fixup'
 alias gdm='git diff $(git_main_branch)'
 alias grbi='git rebase -i --autosquash'
+alias gri='git rebase -i --autosquash'
 
 function psed {
     # https://stackoverflow.com/a/12056944
