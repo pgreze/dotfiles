@@ -14,6 +14,9 @@ alias gdm='git diff $(git_main_branch)'
 alias grbi='git rebase -i --autosquash'
 alias gri='git rebase -i --autosquash'
 
+alias initial_commit="gcmsg \"Initial commit 🚀\""
+alias wip="gcmsg \"WIP 🛠\""
+
 function psed {
     # https://stackoverflow.com/a/12056944
     if [[ $# < 2 ]] ; then
