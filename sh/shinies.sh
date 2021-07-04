@@ -2,12 +2,6 @@
 ### New shiny Rust/Go based CLI
 ###
 
-alias mann="$(which man)"
-man() {
-    echo "Override man with navi https://github.com/denisidoro/navi"
-    navi --query "$1"
-}
-
 # https://github.com/ogham/exa
 alias l="exa -la"
 alias ls="exa"
