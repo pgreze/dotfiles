@@ -17,6 +17,17 @@ function osx_notification {
     fi
 }
 
+function xcode {
+    if [ $# -eq 0 ]; then
+        echo "Usage: xcode /Applications/XcodeXX"
+        echo "Current version: $(xcode-select -p)\n"
+        echo "Available versions:"
+        for xc in /Applications/Xcode*;do echo "xcode $xc";done
+    else
+        sudo xcode-select -s "$1/Contents/Developer"
+    fi
+}
+
 function osx_init {
     # Python
     export PIP_DOWNLOAD_CACHE='/var/tmp/pip-cache';
