@@ -24,7 +24,7 @@ function xcode {
         echo "Available versions:"
         for xc in /Applications/Xcode*;do echo "xcode $xc";done
     else
-        sudo xcode-select -s "$1/Contents/Developer"
+        sudo xcode-select -s "$1"
     fi
 }
 
