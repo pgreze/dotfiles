@@ -16,13 +16,16 @@ brew install coreutils bash grep findutils curl wget gzip tree ncdu htop autojum
 brew install python3 latex2rtf mkvtoolnix irssi ffmpeg
 brew install git git-subrepo git-flow gcc cmake
 brew install git-delta exa procs bat ripgrep dust bandwhich miniserve
+
 # Python2 https://stackoverflow.com/a/60345962/5489877
 wget https://raw.githubusercontent.com/Homebrew/homebrew-core/86a44a0a552c673a05f11018459c9f5faae3becc/Formula/python@2.rb
 brew install python@2.rb && rm python@2.rb
 ## Alternative with pyenv:
 brew install pyenv && pyenv install 2.7.18
+
 # TODO: kibi fdfind ytop licensor
 brew install mas # https://github.com/mas-cli/mas 📦 Mac App Store command line interface
+brew install robotsandpencils/made/xcodes # Allowing to install/manage several XCode versions.
 ```
 
 Homebrew cask:
