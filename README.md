@@ -31,7 +31,7 @@ brew install robotsandpencils/made/xcodes # Allowing to install/manage several X
 Homebrew cask:
 
 ```bash
-brew install --cask the-unarchiver vlc qlmarkdown google-backup-and-sync keepassxc flux
+brew install --cask the-unarchiver vlc qlmarkdown google-drive keepassxc flux
 brew install --cask iterm2 visual-studio-code
 # https://github.com/AdoptOpenJDK/homebrew-openjdk
 brew tap AdoptOpenJDK/openjdk && brew install --cask adoptopenjdk8 adoptopenjdk11
