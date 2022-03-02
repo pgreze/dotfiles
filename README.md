@@ -31,13 +31,12 @@ brew install robotsandpencils/made/xcodes # Allowing to install/manage several X
 Homebrew cask:
 
 ```bash
-brew install --cask the-unarchiver vlc qlmarkdown google-drive keepassxc flux
+brew install --cask flux keepassxc google-drive the-unarchiver qlmarkdown discord vlc
 brew install --cask iterm2 visual-studio-code
-# https://github.com/AdoptOpenJDK/homebrew-openjdk
-brew tap AdoptOpenJDK/openjdk && brew install --cask adoptopenjdk8 adoptopenjdk11
-brew install --cask android-sdk jetbrains-toolbox jd-gui # intellij-idea-ce android-studio
+brew tap homebrew/cask-versions && brew install --cask temurin8 temurin11
+brew install --cask android-sdk jd-gui jetbrains-toolbox # intellij-idea-ce android-studio
 brew install --cask transmission firefox virtualbox android-file-transfer libreoffice skype electrum cyberduck
-brew install --cask docker docker-machine # ??
+brew install --cask docker docker-machine
 brew install --cask raspberry-pi-imager
 ```
 
