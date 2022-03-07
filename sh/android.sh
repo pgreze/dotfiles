@@ -1,6 +1,9 @@
 ###
 ### Android configuration
 ###
+# brew install --cask android-commandlinetools
+# https://github.com/Homebrew/homebrew-cask/pull/104687
+#export PATH="$PATH:/opt/homebrew/share/android-commandlinetools/cmdline-tools/homebrew/bin/"
 
 function setup_android_home {
     if [ -z $ANDROID_HOME ] && [ -d "$1" ]; then
@@ -9,9 +12,10 @@ function setup_android_home {
         export ANDROID_NDK="$ANDROID_HOME/ndk-bundle/"
     fi
 }
-setup_android_home "$HOME/Library/Android/sdk"    # Default Android Studio location
+setup_android_home "$HOME/Library/Android/sdk"    # Android Studio location
 setup_android_home "/usr/local/share/android-sdk" # Homebrew cask
 setup_android_home "/usr/local/opt/android-sdk"   # 🤷
+
 if [ -z $ANDROID_HOME ]; then
     echo "ANDROID_HOME not found" 1>&2
 else
