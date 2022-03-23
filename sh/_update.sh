@@ -27,6 +27,7 @@ dot-up() {
 
   if [ "$(git diff --stat)" != '' ] || [ "$(git current-branch)" != 'main' ]; then
     echo "Invalid $DOTFILES environment, stop update"
+    echo "Maybe you're looking for dot-reload"
     popd > /dev/null
     return 1
   fi
