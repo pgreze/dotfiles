@@ -18,12 +18,15 @@ def aidea(project_dir: Optional[Path] = typer.Argument(None)):
 
     See https://github.com/pgreze/dotfiles/issues/4 for inspirations.
     """
+    sorted_install_paths = lambda: sorted(resolve_install_paths(), reverse=True)
+
+    # Just display the paths if no project is provided.
     if not project_dir:
-        for install_path, launcher in resolve_install_paths():
+        for install_path, launcher in sorted_install_paths():
             print(install_path)
         raise typer.Exit(0)
 
-    paths = list(resolve_install_paths())
+    paths = list(sorted_install_paths())
     if not paths:
         print("No installations found", file=sys.stderr)
         raise typer.Exit(1)
