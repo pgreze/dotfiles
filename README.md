@@ -31,7 +31,7 @@ brew install robotsandpencils/made/xcodes # Allowing to install/manage several X
 Homebrew cask:
 
 ```bash
-brew install --cask flux keepassxc google-drive the-unarchiver qlmarkdown discord vlc
+brew install --cask flux keepassxc google-drive the-unarchiver qlmarkdown discord vlc rectangle
 brew install --cask iterm2 visual-studio-code
 brew tap homebrew/cask-versions && brew install --cask temurin8 temurin11
 brew install --cask android-sdk jd-gui jetbrains-toolbox # intellij-idea-ce android-studio

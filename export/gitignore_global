@@ -2,3 +2,6 @@
 .DS_Store
 *.env
 .vscode
+android-release.json
+env.props
+gen/main/java/java/mercari/merpay/bank/virtualaccount/v1/*
