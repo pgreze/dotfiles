@@ -34,7 +34,7 @@ Homebrew cask:
 brew install --cask flux keepassxc google-drive the-unarchiver qlmarkdown discord vlc rectangle
 brew install --cask iterm2 visual-studio-code
 brew tap homebrew/cask-versions && brew install --cask temurin8 temurin11
-brew install --cask android-sdk jd-gui jetbrains-toolbox # intellij-idea-ce android-studio
+brew install --cask android-sdk jetbrains-toolbox jd-gui visualvm # intellij-idea-ce android-studio
 brew install --cask transmission firefox virtualbox android-file-transfer libreoffice skype electrum cyberduck
 brew install --cask docker docker-machine
 brew install --cask raspberry-pi-imager
