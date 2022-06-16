@@ -19,6 +19,7 @@ else
 fi
 
 git fetch "$REPOSITORY" "$BRANCH"
-
 echo ""
 git checkout "$BRANCH"
+echo ""
+git pull "$REPOSITORY" "$BRANCH"
