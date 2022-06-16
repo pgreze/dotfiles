@@ -72,3 +72,4 @@ function android_take_picture {
 }
 
 alias adb_install_work='adb -d install --user $(adb -d shell pm list users | grep Work | grep -oE "[0-9]+" | head -n 1)'
+alias adb_deeplink='adb shell am start -d'
