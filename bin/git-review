@@ -1,0 +1,24 @@
+#!/usr/bin/env sh
+
+usage() {
+    echo "Usage: git-review [repository] branch"
+}
+
+if [[ $# -eq 0 ]]; then
+    usage
+    exit 1
+elif [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+    usage
+    exit 0
+elif [[ $# -eq 1 ]]; then
+    REPOSITORY="origin"
+    BRANCH="$1"
+else
+    REPOSITORY="$1"
+    BRANCH="$2"
+fi
+
+git fetch "$REPOSITORY" "$BRANCH"
+
+echo ""
+git checkout "$BRANCH"
