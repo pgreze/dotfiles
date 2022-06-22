@@ -83,3 +83,7 @@ git_diff_count() {
     local common_ancestor_count=$(git rev-list --count $common_ancestor)
     echo $(( $target_count - $common_ancestor_count ))
 }
+
+_git_review() {
+  __gitcomp_nl "$(__git_refs)"
+}
