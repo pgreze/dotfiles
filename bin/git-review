@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 usage() {
-    echo "Usage: git-review [repository] branch"
+    echo "Usage: $0 [repository] branch"
 }
 
 if [[ $# -eq 0 ]]; then
