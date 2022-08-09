@@ -33,12 +33,13 @@
 	spull = !git pull && git submodule sync --recursive && git submodule update --init --recursive -f
 	# Nice logs
 	lg = log --graph --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset)%C(auto)%d%C(reset) %C(green)(%as)%C(reset) %C(white)%s%C(reset)'
+	current-branch=rev-parse --abbrev-ref HEAD
+    fix-upstream=!git branch --set-upstream-to=origin/$(git current-branch)
 	# serve for read only
 	serve = !git daemon --base-path=. --export-all --reuseaddr --informative-errors --verbose
 	# hub for read-write 
 	hub = !git daemon --base-path=. --export-all --enable=receive-pack --reuseaddr --informative-errors --verbose
 	# used with git clone http://localhost:1234/
-	current-branch=rev-parse --abbrev-ref HEAD
 [push]
 	default = current
 [pull]
