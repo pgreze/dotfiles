@@ -16,17 +16,14 @@ if [ ! -d "$TARGET_WRAPPER" ]; then
     exit 1
 fi
 
-cleanup() { rm -rf "$TMP_DIR" ; }
-TMP_DIR="/tmp/gradle"
-cleanup
-mkdir -p "$TMP_DIR"
+TMP_DIR="$(mktemp -d)"
+trap "rm -rf $TMP_DIR" EXIT
 touch "$TMP_DIR/settings.gradle"
-trap cleanup EXIT
 
 echo "Resolve the latest version..."
 match=$(curl https://gradle.org/install/ 2>/dev/null | grep -ioP "gradle [\d\.]+" | head -n 1)
-version=${match:7}
-printf "\033[1A\033[K" # Delete last line
+version=${match:7}      # Drop "gradle " prefix
+printf "\033[1A\033[K"  # Delete last line
 
 # TODO: allow to customize the version and/or dist-type
 GRADLE_ARGS="-q wrapper --gradle-version $version --distribution-type bin"
@@ -41,8 +38,10 @@ else
     echo "~/.gradle/wrapper/dists/$gradle_folder/../gradle $GRADLE_ARGS"
 fi
 "$gradle" -p "$TMP_DIR" -Porg.gradle.daemon=false $GRADLE_ARGS
+echo
 
-printf "\nOverwrite $TARGET_WRAPPER files\n"
-cp -R "$TMP_DIR/gradle/wrapper/"* "$TARGET_WRAPPER/"
-echo "Overwrite $TARGET_DIR/gradlew files"
-cp "$TMP_DIR/gradlew"{,.bat} "$TARGET_DIR"
+for file in "$TMP_DIR/"gradle{/wrapper/*,w*}; do
+    subfile=${file:${#TMP_DIR}+1}
+    echo "Overwrite $TARGET_DIR/$subfile"
+    cp "$file" "$TARGET_DIR/$subfile"
+done
