@@ -17,7 +17,7 @@ alias gri='git rebase -i --autosquash'
 alias initial_commit="gcmsg \"Initial commit 🚀\""
 alias wip="gcmsg \"WIP 🛠\""
 
-function psed {
+psed() {
     # https://stackoverflow.com/a/12056944
     if [[ $# < 2 ]] ; then
         echo "Usage: $0 \"search_reg\" \"replace_reg\" [\"<pathspec>\"...]"
@@ -29,8 +29,7 @@ function psed {
     git grep --null --full-name --name-only --perl-regexp -e "$search_reg" $pathspecs | xargs -0 perl -i -p -e "s:$search_reg:$replace_reg:g"
 }
 
-# Common workflow after a PR was merged
-function pr_merged {
+pr_merged() { # Common workflow after a PR was merged
     local base_branch="${1:-$(git_main_branch)}"
     local current_branch="$(git_current_branch)"
     if [ $(echo "$current_branch" | wc -l) != 1 ]; then
@@ -46,31 +45,40 @@ function pr_merged {
     git branch -D "$current_branch"
 }
 
-function gclone {
-    if [ -z "$1" ]; then
-        echo 2>&1 "Usage: $0 git@remote:user/repo.git"
-        echo 2>&1 "Usage: $0 user repo"
-        echo 2>&1
-        echo 2>&1 "This command is cloning a git repo AND cd to the newly created directory."
-        return 0
-    elif [ ! -z "$2" ]; then
-        local repo="git@github.com:$1/$2.git"
-    else
+gclone() {
+    if [ -z "$1" ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+        __gclone_usage && return 0
+    elif [[ "$1" == *github.com* ]]; then
         local repo="$1"
+    elif [ -z "$2" ]; then
+        __gclone_usage && return 1
+    else
+        local repo="git@github.com:$1/$2.git"
+        shift
     fi
-    # Clone repository.
+    shift
+    local args=("$@")
+
+    # Clone repository
     LOGS="$(mktemp)"
-    git clone --progress "${repo}" 2>&1 | tee $LOGS
-    # Resolve created folder and move in.
+    trap "rm $LOGS" EXIT
+    git clone "${args[@]}" --progress "${repo}" 2>&1 | tee "$LOGS"
+
+    # Resolve created folder and move in
     FOLDER=$(head -1 $LOGS | cut -d\' -f2)
     if [ -z "$FOLDER" ]; then
         echo 2>&1 "Could not resolve output directory"
         return 1
     fi
-    echo
-    echo "cd $(pwd)/$FOLDER"
-    cd $FOLDER
-    rm $LOGS > /dev/null
+    printf "\ncd $(pwd)/$FOLDER\n"
+    cd "$FOLDER"
+}
+
+__gclone_usage() {
+    echo "Usage: gclone git@github.com:user/repo.git [extra-args...]"
+    echo "Usage: gclone user repo [extra-args...]"
+    printf "\nPossible extra-args: --single-branch --depth 1\n"
+    printf "\nThis command is cloning a git repo AND cd to the newly created directory.\n"
 }
 
 git_diff_count() {
