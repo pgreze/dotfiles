@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+script="$1"
+shift
+kotlinc -script "$script" -- "$@"

@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+script="$(dirname $0)/kidea.main.kts"
+kotlinc -script "$script" -- "$@"
