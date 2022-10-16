@@ -58,6 +58,13 @@ function osx_init {
 
 if [[ "$(uname)" == 'Darwin' ]]; then
     osx_init
+
+    # https://blog.akatz.org/fixing-macos-zsh-terminal-history-settings/
+    # https://news.ycombinator.com/item?id=33186412
+    alias history="history 1"
+    HISTSIZE=99999
+    HISTFILESIZE=99999
+    SAVEHIST=$HISTSIZE
 fi
 
 unset -f osx_init
