@@ -6,49 +6,60 @@ import sys
 import curses
 import subprocess
 import typer
+from collections import namedtuple
 from os.path import expanduser
 from pathlib import Path
 from typing import Union, List, Generator, Tuple, Optional
 
 
-def aidea(project_dir: Optional[Path] = typer.Argument(None)):
+Install = namedtuple('Install', ['install_dir', 'launcher', 'infoString'])
+
+
+def aidea(project_dir: Optional[Path] = typer.Argument(None)) -> typer.Exit:
     """
     Interactively ask which IDEA path to use to open a project,
     or display detected installations if no path is provided.
 
     See https://github.com/pgreze/dotfiles/issues/4 for inspirations.
     """
-    sorted_install_paths = lambda: sorted(resolve_install_paths(), reverse=True)
+    sorted_installs = sorted(
+        resolve_installs(),
+        key=lambda i: i.install_dir,
+        reverse=True
+    )
 
     # Just display the paths if no project is provided.
     if not project_dir:
-        for install_path, launcher in sorted_install_paths():
-            print(install_path)
+        for install in sorted_installs:
+            print(install.install_dir)
         raise typer.Exit(0)
 
-    paths = list(sorted_install_paths())
-    if not paths:
+    installs = list(sorted_installs)
+    if not installs:
         print("No installations found", file=sys.stderr)
         raise typer.Exit(1)
 
-    for index, (path, _) in enumerate(paths):
-        index = str(index + 1).rjust(len(paths), " ")
-        print(f"{index}: {path}")
+    for index, install in enumerate(installs):
+        prefix = str(index + 1).rjust(3, " ")
+        print(f"{prefix}: {install.infoString}")
+        print(f'{" " * len(prefix)}  {install.install_dir}', end='\n\n')
     selected_launcher = None
     while not selected_launcher:
         print("Which installation to use? ", end="")
         try:
             index = int(input()) - 1
-            if index >= 0 and index < len(paths):
-                selected_launcher = paths[index][1]
-        except Exception: # Filter all errors except ctrl+c
+            if index >= 0 and index < len(installs):
+                selected_launcher = installs[index].launcher
+        except EOFError: # ctrl-d support
+            return typer.Exit(0)
+        except Exception: # Filter all errors except ctrl-c
             continue
 
     proc = subprocess.run(["/usr/bin/open", "-na", selected_launcher, "--args", project_dir.absolute()])
     raise typer.Exit(proc.returncode)
 
 
-def resolve_install_paths():
+def resolve_installs():
     # Jetbrains Toolbox
     toolbox_root_dir = Path(expanduser("~/Library/Application Support/JetBrains/Toolbox/apps"))
     yield from _resolve_toolbox_launchers(toolbox_root_dir / "AndroidStudio", "studio")
@@ -76,8 +87,25 @@ def _resolve_toolbox_launchers(root_dir: Path, filename: str):
 
 def _resolve_launcher(install_dir: Path, filename: str):
     if not install_dir.is_dir(): return
+
     launcher = install_dir / "Contents/MacOS" / filename
-    if launcher.exists(): yield (install_dir, launcher,)
+    if not launcher.exists(): return
+
+    infoString = None
+    if infoPlist := install_dir / "Contents/Info.plist":
+        with open(infoPlist) as f:
+            foundKey = False
+            for line in f:
+                if foundKey:
+                    bgn = len('<string>')
+                    # Drop '. Copyright JetBrains s.r.o., (c) 2000-2022'
+                    # End alternative was just to drop </string>.
+                    end = -(len(line) - line.index('Copyright') + 2)
+                    infoString = line.strip()[bgn:end]
+                    break
+                foundKey = line.strip() == '<key>CFBundleGetInfoString</key>'
+
+    yield Install(install_dir, launcher, infoString)
 
 
 if __name__ == "__main__":
