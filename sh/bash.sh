@@ -2,6 +2,10 @@
 ### Bash configuration
 ###
 
+if [ -d "$HOME/bin" ]; then
+    export PATH="$PATH:$HOME/bin"
+fi
+
 # See https://itnext.io/upgrading-bash-on-macos-7138bd1066ba
 if file /usr/local/bin/bash > /dev/null && \
     [ $(which -a bash | grep /usr/local/bin/bash | wc -l) -ne 0 ] && \
