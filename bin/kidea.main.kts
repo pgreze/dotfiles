@@ -1,3 +1,4 @@
+#!/usr/bin/env kotlinc -script
 @file:DependsOn("com.github.pgreze:kotlin-process:1.4")
 
 import com.github.pgreze.process.process
@@ -30,21 +31,21 @@ fun main() {
     val projectDir = File(System.getProperty("user.home"))
         .resolve(".kidea/$identifier-${script.name}")
 
-    val mavenLines = script.useLines { lines ->
-        val repositoryMatcher = """^@file:Repository\("([^"]+)"\)""".toRegex()
-        val dependsOnMatcher = """^@file:DependsOn\("([^"]+)"\)""".toRegex()
-        lines.takeWhile { it.startsWith("import ").not() }.mapNotNull {
-            repositoryMatcher.findCapturedGroup(it)?.let(MavenLine::Repository)
-                ?: dependsOnMatcher.findCapturedGroup(it)?.let(MavenLine::Dependency)
-        }.toList()
-    }
+    //val mavenLines = script.useLines { lines ->
+    //    val repositoryMatcher = """^@file:Repository\("([^"]+)"\)""".toRegex()
+    //    val dependsOnMatcher = """^@file:DependsOn\("([^"]+)"\)""".toRegex()
+    //    lines.takeWhile { it.startsWith("import ").not() }.mapNotNull {
+    //        repositoryMatcher.findCapturedGroup(it)?.let(MavenLine::Repository)
+    //            ?: dependsOnMatcher.findCapturedGroup(it)?.let(MavenLine::Dependency)
+    //    }.toList()
+    //}
 
     require(projectDir.deleteRecursively()) {
         exitWithError("Could not delete $projectDir")
     }
     projectDir.mkdirs()
     projectDir.resolve("build.gradle.kts")
-        .writeText(buildGradle(mavenLines))
+        .writeText(buildGradle())//mavenLines))
     projectDir.resolve("settings.gradle")
         .writeText("rootProject.name = \"${script.name}\"")
 
@@ -78,7 +79,7 @@ fun Regex.findCapturedGroup(input: String): String? =
 
 // Notice: kotlin-stdlib-jdk8 is added by default by the plugin.
 fun buildGradle(
-    mavenLines: Collection<MavenLine>,
+    mavenLines: Collection<MavenLine> = listOf(),
     separator: String = "\n" + " ".repeat(8),
 ): String = """
     plugins {
