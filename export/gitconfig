@@ -42,6 +42,7 @@
 	# used with git clone http://localhost:1234/
 [push]
 	default = current
+	autoSetupRemote = true
 [pull]
 	rebase = true
 [branch]
