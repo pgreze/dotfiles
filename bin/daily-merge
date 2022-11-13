@@ -1,0 +1,113 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""Merge Obsidian created daily notes in a monthly folder.
+
+This is consuming a ~/.config/daily-merge.ini file with this format:
+```
+[target]
+path = /Users/pgreze/git/pgreze/notes/daily
+format = daily-%Y-%W-%m-%d
+```
+"""
+
+import sys
+import typer
+from configparser import ConfigParser
+from datetime import datetime
+from pathlib import Path
+from shutil import move
+
+app = typer.Typer()
+config_path = Path.home() / '.config/daily-merge.ini'
+# interpolation=None is allowing to store '%' character.
+config = ConfigParser(interpolation=None)
+config.read(config_path)
+targets = config.sections()
+
+@app.command()
+def register(
+    target: str = typer.Argument(..., help = "Name for this target"),
+    path: str = typer.Argument(..., help = "Path of the target folder"),
+    format: str = typer.Argument(..., help = "Format of the file to move")
+):
+    '''
+    Register a new target for daily merge.
+
+    \b
+    Reminder about helpful date codes:
+    - %Y Year like 2014
+    - %y Year like 14 from 2014
+    - %U Week number of the year, Sunday as the first day of the week.
+    - %W Week number of the year, Monday as the first day of the week.
+    - %m Month.
+    - %d Day of the month.
+    - %w Weekday with 0 as Sunday.
+
+    \b
+    Time codes:
+    - %H Hour (24-hour clock).
+    - %M Minute.
+
+    https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
+    '''
+    # Check if the format is valid.
+    last_file = [f for f in Path(path).iterdir() if f.is_file()][-1]
+    date = datetime.strptime(name_without_ext(last_file), format).date()
+    print("Confirm that given format is correct:")
+    print(f"> {last_file.name} -> {date}?")
+    print("Is it correct? (y/n) ", end='')
+    if input() != 'y': return
+    # Add the new section.
+    config[target] = {
+        'path': path,
+        'format': format,
+    }
+    # Save the config file.
+    config_path.parent.mkdir(exist_ok=True)
+    with open(config_path, 'w') as file:
+        config.write(file)
+
+
+@app.command(no_args_is_help = True)
+def merge(
+    target: str = typer.Argument(..., help = "Possible values: " + ', '.join(targets)),
+    run: bool = typer.Option(False, help = "Preview changes by default"),
+):
+    '''
+    Merge past months target daily notes in monthly folders.
+    '''
+    path = Path(config[target]['path'])
+    format = config[target]['format']
+    path_to_date = list(_paths_with_date(path, format))
+    if not path_to_date:
+        print("Nothing found")
+        return
+
+    path_to_date.sort(key=lambda e: e[1])
+    last_day = path_to_date[-1][1] # max(d for _, d in path_to_date)
+    print(f"Last month: {last_day.year}/{last_day.month}")
+    for p, d in path_to_date:
+        if d.year == last_day.year and d.month == last_day.month:
+            continue
+        folder = path / d.strftime(('%Y' if '%Y' in format else '%y') + '-%m')
+        if run: folder.mkdir(exist_ok=True)
+        print(f"mv {p} -> {folder}")
+        if run: move(p, folder)
+
+
+def name_without_ext(path: Path) -> Path:
+    return path.name[:-len(path.suffix)] if path.suffix else path.name
+
+
+def _paths_with_date(path: Path, format: str):
+    for p in path.iterdir():
+        if not p.is_file(): continue
+        try:
+            name = name_without_ext(p)
+            yield (p, datetime.strptime(name, format).date())
+        except: continue
+
+
+if __name__ == '__main__':
+    app()
