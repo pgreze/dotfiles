@@ -12,11 +12,19 @@ format = daily-%Y-%W-%m-%d
 """
 
 import sys
-import typer
 from configparser import ConfigParser
 from datetime import datetime
 from pathlib import Path
 from shutil import move
+try:
+    import typer
+except:
+    user_input = input('OK to install using typer? [y/n]')
+    if not user_input.lower() in ('y', 'yes'):
+        exit()
+    import subprocess
+    subprocess.run([sys.executable, '-m', 'pip', 'install', 'requests'], check=True)
+    import typer
 
 app = typer.Typer()
 config_path = Path.home() / '.config/daily-merge.ini'
