@@ -14,7 +14,7 @@ printf "\n>> build-tools/* versions\n"
 ls $ANDROID_HOME/build-tools/
 
 printf "\n>> platforms/* versions\n"
-for platform_version in $(ls $ANDROID_HOME/platforms/); do
+ls $ANDROID_HOME/platforms/ | while read platform_version; do
     source_pros="$ANDROID_HOME/platforms/$platform_version/source.properties"
     [ -f $source_pros ] && echo "$platform_version $(grep Pkg.Revision $source_pros)"
 done
