@@ -6,6 +6,7 @@
 alias l="exa -la"
 alias ls="exa"
 
+# https://github.com/dalance/procs
 alias pss="$(which ps)"
 ps() {
     echo "Override ps with procs https://github.com/dalance/procs"
@@ -16,9 +17,3 @@ ps() {
 alias catt="$(which cat)"
 alias cat=bat
 alias less=bat
-
-alias grepp="$(which grep)"
-ps() {
-    echo "Override grep with rg https://github.com/BurntSushi/ripgrep"
-    rg "$@"
-}

@@ -5,16 +5,16 @@
 # is SUPER SLOW and only working with Java8...
 # Error: java.lang.NoClassDefFoundError: javax/xml/bind/annotation/XmlSchema
 
-echo "Android SDK located in: $ANDROID_HOME"
+printf ">> Android SDK located in:\n$ANDROID_HOME\n"
 
-echo ">> platform-tools/ version"
-grep Pkg.Revision $ANDROID_HOME/platform-tools/source.properties
+printf "\n>> platform-tools/ version\n"
+grep Pkg.Revision "$ANDROID_HOME/platform-tools/source.properties"
 
 printf "\n>> build-tools/* versions\n"
-ls $ANDROID_HOME/build-tools/
+ls "$ANDROID_HOME/build-tools/"
 
 printf "\n>> platforms/* versions\n"
-ls $ANDROID_HOME/platforms/ | while read platform_version; do
+ls "$ANDROID_HOME/platforms/" | while read platform_version; do
     source_pros="$ANDROID_HOME/platforms/$platform_version/source.properties"
     [ -f $source_pros ] && echo "$platform_version $(grep Pkg.Revision $source_pros)"
 done
