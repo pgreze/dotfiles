@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+#
+# when using ZSH every day, quickly test bash oneliners can be a pain.
+# This script is creating a temporary file with first arg as content,
+# and runs it with following arguments.
+#
+
+usage() {
+    printf "Usage: $(basename "$0") content [<arg>...]\n\n"
+    echo "Example: bash-run 'pargs \"\$@\"' \"hello world\" haha plop"
+    exit $1
+}
+if [[ $# -eq 0 ]]; then
+    usage 1
+elif [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+    usage 0
+fi
+
+TMP_FILE="$(mktemp)"
+chmod +x "$TMP_FILE"
+
+echo "#!/usr/bin/env bash" > "$TMP_FILE"
+echo "$1" >> "$TMP_FILE"
+
+shift
+# TODO: support stdin redirection
+# https://stackoverflow.com/questions/2746553/read-values-into-a-shell-variable-from-a-pipe
+# https://unix.stackexchange.com/questions/33049/how-to-check-if-a-pipe-is-empty-and-run-a-command-on-the-data-if-it-isnt
+"$TMP_FILE" "$@"
