@@ -31,17 +31,28 @@ brew install robotsandpencils/made/xcodes # Allowing to install/manage several X
 Homebrew cask:
 
 ```bash
-brew install --cask flux keepassxc google-drive the-unarchiver qlmarkdown discord vlc rectangle
-brew install --cask iterm2 visual-studio-code
-brew tap homebrew/cask-versions && brew install --cask temurin8 temurin11
+brew install --cask flux keepassxc google-drive the-unarchiver qlmarkdown
+brew install --cask obsidian rectangle bartender
+brew install --cask iterm2 visual-studio-code trailer
+# TODO: telegram
 brew install --cask android-sdk jetbrains-toolbox jd-gui visualvm # intellij-idea-ce android-studio
-brew install --cask transmission firefox virtualbox android-file-transfer libreoffice skype electrum cyberduck
+brew install --cask transmission discord vlc firefox virtualbox android-file-transfer libreoffice skype electrum cyberduck
 brew install --cask docker docker-machine
 brew install --cask raspberry-pi-imager
 ```
 
-Others:
+Java:
+```
+# Recommended way
+curl -s "https://get.sdkman.io" | bash
+for i in gradle kotlin kscript; do sdk install $i;done
+for i in 8.0.352-zulu 11.0.15-tem 17.0.5 19.0.1-tem;do sdk install java $i;done
 
+# With homebrew
+brew tap homebrew/cask-versions && brew install --cask temurin8 temurin11
+```
+
+Others:
 ```
 pip3 install pyftpdlib    # python3 -m pyftpdlib (expose ftp server)
 pip3 install adb-enhanced # https://github.com/ashishb/adb-enhanced
