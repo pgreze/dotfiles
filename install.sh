@@ -6,7 +6,7 @@ MY_FOLDER="$HOME/.my"
 
 # Install oh-my-zsh
 [ -d "$HOME/.oh-my-zsh" ] || (
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    RUNZSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 )
 
 # Link current folder to ~/.my

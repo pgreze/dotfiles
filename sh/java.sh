@@ -20,41 +20,10 @@ jdk() {
     java -version
 }
 
-if [ -d $HOME/.sdkman ]; then
-    export SDKMAN_DIR="$HOME/.sdkman"
-    SDKMAN_INITSCRIPT="$SDKMAN_DIR/bin/sdkman-init.sh"
-    [[ -s "$SDKMAN_INITSCRIPT" ]] && source "$SDKMAN_INITSCRIPT"
-    unset SDKMAN_INITSCRIPT
-fi
-sdk-howto() {
-    echo "
-https://sdkman.io/usage
-
-# Use
-
-sdk use java 11.0.15-zulu
-sdk default java 11.0.15-zulu
-
-sdk current
-sdk current java
-
-# Install
-
-sdk list [java]
-
-sdk install [java] [version]
-    autocompletion is working 👍
-sdk upgrade kotlin
-
-sdk offline [enable|disable]
-
-sdk version
-sdk selfupdate (force) # add 'force' to reinstall
-"
-}
+# See ./sdkman.sh
 
 # https://www.jenv.be/
-if [ -d $HOME/.jenv/bin ]; then
+if [ -d "$HOME/.jenv/bin" ]; then
     export PATH="$HOME/.jenv/bin:$PATH"
     eval "$(jenv init -)"
 fi

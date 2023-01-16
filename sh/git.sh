@@ -2,8 +2,7 @@
 ### Git configuration
 ###
 
-unalias g
-unalias gg
+unalias g gg 2&>/dev/null
 alias gs='git st'
 alias gd='git diff'
 alias gg='git lg'

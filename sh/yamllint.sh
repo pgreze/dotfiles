@@ -7,4 +7,5 @@ if command -v yamllint > /dev/null; then
     alias yamllint="$_yamllint -c $HOME/.yamllint.yml"
 elif [[ "$(uname)" == 'Darwin' ]]; then
     echo "TODO: brew install yamllint"
+    echo "TODO: pip install --user yamllint"
 fi

@@ -7,5 +7,34 @@
 ## Install with: curl -s "https://get.sdkman.io" | bash
 ##
 
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+if [ -d "$HOME/.sdkman" ]; then
+    export SDKMAN_DIR="$HOME/.sdkman"
+    [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+fi
+
+sdk-howto() {
+    echo "
+https://sdkman.io/usage
+
+# Use
+
+sdk use java 11.0.15-zulu
+sdk default java 11.0.15-zulu
+
+sdk current
+sdk current java
+
+# Install
+
+sdk list [java]
+
+sdk install [java] [version]
+    autocompletion is working 👍
+sdk upgrade kotlin
+
+sdk offline [enable|disable]
+
+sdk version
+sdk selfupdate (force) # add 'force' to reinstall
+"
+}

@@ -9,7 +9,7 @@ function init_starship {
     echo ">> Install starship"
     case "$OSTYPE" in
       darwin*) brew install starship ;;
-      *)       curl -fsSL https://starship.rs/install.sh | bash ;;
+      *)       curl -sS https://starship.rs/install.sh | sh ;;
     esac
   fi
 
@@ -40,16 +40,14 @@ EOF
   case "$OSTYPE" in
     darwin*) cat >> $config_file <<EOF
 [character]
-symbol = "🍏 ➜ "
+success_symbol = "🍏 ➜ "
 error_symbol = "🍎 ➜ "
-use_symbol_for_status = true
 EOF
     ;;
     linux*) cat >> $config_file <<EOF
 [character]
-symbol = "🐧 ➜ "
+success_symbol = "🐧 ➜ "
 error_symbol = "🧨 ➜ "
-use_symbol_for_status = true
 EOF
     ;;
   esac

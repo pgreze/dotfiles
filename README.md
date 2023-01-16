@@ -2,6 +2,7 @@
 
 Yet Another Dotfiles project.
 
+
 ## Installation
 
 ```bash
@@ -10,7 +11,8 @@ git clone --recursive git@github.com:pgreze/dotfiles.git ~/git/pgreze/dotfiles
 ~/git/pgreze/dotfiles/install.sh
 ```
 
-## OSX
+
+### OSX 🍏
 
 Homebrew:
 ```bash
@@ -19,7 +21,7 @@ Homebrew:
 brew doctor
 
 # Essentials
-brew install coreutils bash grep findutils curl wget gzip tree ncdu htop autojump tmux thefuck
+brew install coreutils bash grep findutils curl wget gzip tree ncdu htop autojump tmux
 brew install python3 latex2rtf mkvtoolnix irssi ffmpeg gcc cmake
 brew install git git-subrepo git-flow gh git-delta
 brew install exa procs bat ripgrep dust bandwhich miniserve
@@ -64,6 +66,14 @@ pip3 install pyftpdlib    # python3 -m pyftpdlib (expose ftp server)
 pip3 install adb-enhanced # https://github.com/ashishb/adb-enhanced
 ```
 
+
+### Linux 🐧
+
+```bash
+sudo apt install -y bat exa autojump tree
+```
+
+
 ## SSH keys
 
 After enabling *remote login* in *Sharing* preferences,
@@ -77,6 +87,7 @@ ssh-copy-id -i ~/.ssh/id_rsa.pub user@new_pc
 # On new PC
 ssh-copy-id -i ~/.ssh/id_rsa.pub user@old_pc
 ```
+
 
 ## References
 
@@ -94,13 +105,15 @@ ssh-copy-id -i ~/.ssh/id_rsa.pub user@old_pc
   - https://github.com/imsnif/bandwhich
   - https://github.com/svenstaro/miniserve
   - https://github.com/raftario/licensor
-  
+
+
 ## (OSX) How to Enable Key Repeating
 
 See [this article for details](https://www.howtogeek.com/267463/how-to-enable-key-repeating-in-macos/):
 ```
 defaults write -g ApplePressAndHoldEnabled -bool false
 ```
+
 
 ## (OSX) Change screenshots location
 
