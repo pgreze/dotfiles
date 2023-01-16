@@ -13,8 +13,9 @@ else
 fi
 
 # https://github.com/sharkdp/bat
-if command -v bat > /dev/null; then
+if [[ "$(uname)" == 'Darwin' ]] && command -v bat > /dev/null; then
     alias catt="$(which cat)"
+    alias batcat=bat # Align with Linux
     alias cat=bat
     alias less=bat
 elif command -v batcat > /dev/null; then
@@ -45,4 +46,9 @@ else
         echo ">> procs $PROCS_VERSION successfully installed"
         unset -f install_procs
     }
+fi
+
+# https://github.com/dandavison/delta
+if ! command -v delta > /dev/null; then
+    echo "TODO: install delta https://dandavison.github.io/delta/installation.html"
 fi

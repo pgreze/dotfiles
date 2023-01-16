@@ -11,6 +11,6 @@ mkdir -p "$DOTCACHE"
 export PATH="$DOTFILES/bin:$PATH"
 
 # Import all configuration files
-for file in $(ls $DOTFILES/sh/*.sh); do
+for file in $DOTFILES/sh/*.sh; do
     source "$file"
 done

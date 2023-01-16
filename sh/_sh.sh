@@ -1,9 +1,17 @@
 ###
-### Bash configuration
+### Shell configuration
 ###
 
-if [ -d "$HOME/bin" ]; then
-    export PATH="$PATH:$HOME/bin"
+# Temporary fix when chsh was done without reboot
+case $SHELL in
+  */zsh)  [ ! -z $BASH_VERSION ] && NEW_SHELL=$(command -v bash) ;;
+  */bash) [ ! -z $ZSH_VERSION ] && NEW_SHELL=$(command -v zsh) ;;
+  *)      echo "Unsupported shell, cannot load starship."
+esac
+if [ ! -z "$NEW_SHELL" ]; then
+    echo "Fix SHELL=$SHELL to $NEW_SHELL"
+    export SHELL="$NEW_SHELL"
+    unset NEW_SHELL
 fi
 
 # See https://itnext.io/upgrading-bash-on-macos-7138bd1066ba

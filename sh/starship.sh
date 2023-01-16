@@ -24,30 +24,30 @@ function generate_starship_config {
 add_newline = true
 
 [git_branch]
-symbol = ""
-
-[java]
-style="bold red"
-
+symbol = ''
 [git_commit]
 disabled = true
 [git_state]
 disabled = true
 [git_status]
 disabled = true
+
+[java]
+style="bold red"
+
 EOF
   # OS specific
   case "$OSTYPE" in
     darwin*) cat >> $config_file <<EOF
 [character]
-success_symbol = "🍏 ➜ "
-error_symbol = "🍎 ➜ "
+success_symbol = '🍏 ➜ '
+error_symbol = '🍎 ➜ '
 EOF
     ;;
     linux*) cat >> $config_file <<EOF
 [character]
-success_symbol = "🐧 ➜ "
-error_symbol = "🧨 ➜ "
+success_symbol = '🐧 ➜ '
+error_symbol = '🧨 ➜ '
 EOF
     ;;
   esac

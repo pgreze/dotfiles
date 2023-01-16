@@ -73,13 +73,13 @@ fi
 unset dot_new_session
 
 ##
-## Update part
+## Welcome output
 ##
 
-# Welcome output
-echo "     ~~~~~~~~ Welcome $USER@$HOST :3 ~~~~~~~~"
-echo "+ $(uname -a)"
-echo "+ $(uptime)"
+echo "     ~~~~~~~~ $USER@$HOST ~~~~~~~~"
+# Shorter alternative to "uname -a", see --help for details
+echo "$(uname -srmpo)"
+echo "$(uptime)"
 
 if $DOTFILES/bin/check_update dotfiles; then
   dot-up --all
