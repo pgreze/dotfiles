@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/gdubw/gng.git
+	branch = master
+	commit = 173943b61092a1a00315f730c4054109a1c8937d
+	parent = b33b6a2e1d577084e22eef2ba22325dedb733c1a
+	method = merge
+	cmdver = 0.4.1
