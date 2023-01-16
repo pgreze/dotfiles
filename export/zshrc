@@ -16,7 +16,7 @@ HIST_STAMPS="yyyy-mm-dd"
 ALIAS_TIPS_LINK="$ZSH/plugins/alias-tips"
 if [ ! -e "$ALIAS_TIPS_LINK" ]; then
     echo "Link alias-tips in $ALIAS_TIPS_LINK"
-    ln -s "$HOME/.my/third_party/alias-tips" "$ALIAS_TIPS_LINK"
+    ln -s "$HOME/.my/vendor/alias-tips" "$ALIAS_TIPS_LINK"
 fi
 unset ALIAS_TIPS_LINK
 
