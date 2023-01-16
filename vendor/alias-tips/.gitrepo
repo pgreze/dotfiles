@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/djui/alias-tips.git
+	branch = master
+	commit = 4d2cf6f10e5080f3273be06b9801e1fd1f25d28d
+	parent = 1406d5b148d5e7f114f0767df3946fea1952e4c9
+	method = merge
+	cmdver = 0.4.1
