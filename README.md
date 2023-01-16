@@ -5,13 +5,20 @@ Yet Another Dotfiles project.
 ## Installation
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+mkdir -p ~/git/pgreze
+git clone --recursive git@github.com:pgreze/dotfiles.git ~/git/pgreze/dotfiles
+~/git/pgreze/dotfiles/install.sh
 ```
 
-Homebrew:
+## OSX
 
+Homebrew:
 ```bash
+# https://brew.sh/
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 brew doctor
+
+# Essentials
 brew install coreutils bash grep findutils curl wget gzip tree ncdu htop autojump tmux thefuck
 brew install python3 latex2rtf mkvtoolnix irssi ffmpeg gcc cmake
 brew install git git-subrepo git-flow gh git-delta
@@ -29,7 +36,6 @@ brew install robotsandpencils/made/xcodes # Allowing to install/manage several X
 ```
 
 Homebrew cask:
-
 ```bash
 brew install --cask flux keepassxc google-drive the-unarchiver qlmarkdown
 brew install --cask obsidian rectangle bartender
@@ -42,7 +48,7 @@ brew install --cask raspberry-pi-imager
 ```
 
 Java:
-```
+```bash
 # Recommended way
 curl -s "https://get.sdkman.io" | bash
 for i in gradle kotlin kscript; do sdk install $i;done
@@ -53,7 +59,7 @@ brew tap homebrew/cask-versions && brew install --cask temurin8 temurin11
 ```
 
 Others:
-```
+```bash
 pip3 install pyftpdlib    # python3 -m pyftpdlib (expose ftp server)
 pip3 install adb-enhanced # https://github.com/ashishb/adb-enhanced
 ```
