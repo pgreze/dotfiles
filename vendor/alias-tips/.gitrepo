@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://github.com/djui/alias-tips.git
 	branch = master
-	commit = 4d2cf6f10e5080f3273be06b9801e1fd1f25d28d
-	parent = 1406d5b148d5e7f114f0767df3946fea1952e4c9
+	commit = 41cb143ccc3b8cc444bf20257276cb43275f65c4
+	parent = 2c0929db677e08b5973790ddea1462d2345476c3
 	method = merge
-	cmdver = 0.4.1
+	cmdver = 0.4.5
