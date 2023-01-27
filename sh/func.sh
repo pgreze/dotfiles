@@ -18,6 +18,19 @@ pong() {
   ping $addr | while read x; do echo "$(date +"%H:%M:%S"): $x"; done
 }
 
+ffconvert() {
+  local USAGE="Usage: $0 [file] [format]"
+  [ "$1" = -h ] && echo $USAGE && return 0
+  [ $# != 2 ] && echo $USAGE && return 1
+  if [ ! -f $1 ]; then
+    echo "'$1' is not a valid file"
+    return 1
+  fi
+  local target="${1%.*}.$2"
+  echo ">> Convert $1 --> $target"
+  ffmpeg "$1" "$target"
+}
+
 extract() {
   if [ -f $1 ]; then
     case $1 in
@@ -38,18 +51,4 @@ extract() {
     echo "'$1' is not a valid file"
     return 1
   fi
-}
-
-ffconvert() {
-  if [ ! -f $1 ]; then
-    echo "'$1' is not a valid file"
-    return 1
-  fi
-  if [ $# != 2 ]; then
-    echo "Usage: $0 [file] [format]"
-    return 1
-  fi
-  local target="${1%.*}.$2"
-  echo ">> Convert $1 --> $target"
-  ffmpeg "$1" "$target"
 }
