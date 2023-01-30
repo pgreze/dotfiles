@@ -18,12 +18,12 @@ from pathlib import Path
 from shutil import move
 try:
     import typer
-except:
-    user_input = input('OK to install using typer? [y/n]')
-    if not user_input.lower() in ('y', 'yes'):
+except ImportError as e:
+    user_input = input(f'{e.name} is missing, should we install it? [y/n] ')
+    if user_input.lower() != 'y':
         exit()
     import subprocess
-    subprocess.run([sys.executable, '-m', 'pip', 'install', 'requests'], check=True)
+    subprocess.run([sys.executable, '-m', 'pip', 'install', e.name], check=True)
     import typer
 
 app = typer.Typer(no_args_is_help = True)
