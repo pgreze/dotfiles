@@ -12,6 +12,7 @@ alias gcaf='git commit -a --fixup'
 alias gdm='git diff $(git_main_branch)'
 alias grbi='git rebase -i --autosquash'
 alias gri='git rebase -i --autosquash'
+alias gfom='git_main_branch | while read br; do gfo -v "$br:$br";done'
 
 alias initial_commit="gcmsg \"Initial commit 🚀\""
 alias wip="gcmsg \"WIP 🛠\""
