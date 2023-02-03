@@ -52,3 +52,10 @@ fi
 if ! command -v delta > /dev/null; then
     echo "TODO: install delta https://dandavison.github.io/delta/installation.html"
 fi
+
+# https://github.com/junegunn/fzf
+case $SHELL in
+  */zsh)  [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh   || echo "TODO: brew install fzf" ;;
+  */bash) [ -f ~/.fzf.bash ] && source ~/.fzf.bash || echo "TODO: brew install fzf" ;;
+  *)      echo "Unsupported shell, cannot load fzf."
+esac
