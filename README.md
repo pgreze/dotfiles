@@ -39,7 +39,7 @@ brew install robotsandpencils/made/xcodes # Allowing to install/manage several X
 
 Homebrew cask:
 ```bash
-brew install --cask flux keepassxc google-drive the-unarchiver qlmarkdown
+brew install --cask shifty lunar keepassxc google-drive the-unarchiver qlmarkdown
 brew install --cask obsidian rectangle bartender
 brew install --cask iterm2 visual-studio-code trailer
 # TODO: telegram
