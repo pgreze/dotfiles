@@ -107,8 +107,14 @@ ssh-copy-id -i ~/.ssh/id_rsa.pub user@old_pc
   - https://github.com/svenstaro/miniserve
   - https://github.com/raftario/licensor
 
+## OSX Tips
 
-## (OSX) How to Enable Key Repeating
+### Stop display this annoying terminal when pressing Cmd+Shift+A
+
+[Manual operation](https://intellij-support.jetbrains.com/hc/en-us/articles/360005137400-Cmd-Shift-A-hotkey-opens-Terminal-with-apropos-search-instead-of-the-Find-Action-dialog)
+or [script based](https://gist.github.com/mrmanc/72eb1712472242e8962661f59ea60ca8)
+
+### How to Enable Key Repeating
 
 See [this article for details](https://www.howtogeek.com/267463/how-to-enable-key-repeating-in-macos/):
 ```
@@ -116,7 +122,7 @@ defaults write -g ApplePressAndHoldEnabled -bool false
 ```
 
 
-## (OSX) Change screenshots location
+### Change screenshots location
 
 Before:
 ```
