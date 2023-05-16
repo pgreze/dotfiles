@@ -45,7 +45,7 @@ brew install --cask obsidian rectangle bartender nordvpn
 brew install --cask iterm2 visual-studio-code trailer sloth
 # TODO: telegram
 brew install --cask android-sdk jetbrains-toolbox jd-gui visualvm # intellij-idea-ce android-studio
-brew install --cask transmission discord vlc firefox virtualbox android-file-transfer libreoffice skype electrum cyberduck
+brew install --cask transmission slack discord vlc firefox virtualbox android-file-transfer libreoffice skype electrum cyberduck
 brew install --cask docker docker-machine
 brew install --cask raspberry-pi-imager
 ```
