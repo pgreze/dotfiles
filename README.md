@@ -41,7 +41,7 @@ Homebrew cask:
 ```bash
 # Notice: lunar is not working well with my LG ultrawide
 brew install --cask shifty keepassxc google-drive the-unarchiver qlmarkdown
-brew install --cask obsidian rectangle bartender
+brew install --cask obsidian rectangle bartender nordvpn
 brew install --cask iterm2 visual-studio-code trailer sloth
 # TODO: telegram
 brew install --cask android-sdk jetbrains-toolbox jd-gui visualvm # intellij-idea-ce android-studio
