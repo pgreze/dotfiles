@@ -50,12 +50,13 @@ brew install --cask docker docker-machine
 brew install --cask raspberry-pi-imager
 ```
 
-Java:
+https://endoflife.date/java
 ```bash
 # Recommended way
 curl -s "https://get.sdkman.io" | bash
 for i in gradle kotlin kscript; do sdk install $i;done
-for i in 8.0.352-zulu 11.0.15-tem 17.0.5 19.0.1-tem;do sdk install java $i;done
+sdk list java | grep -E '(tem|zulu)' | grep -E '(8|11|17)'
+sdk install java $version
 
 # With homebrew
 brew tap homebrew/cask-versions && brew install --cask temurin8 temurin11
