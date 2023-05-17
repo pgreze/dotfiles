@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+
+from configparser import ConfigParser, SectionProxy
+from itertools import chain
+from typing import Optional
+import sys
+
+
+def load_props(filepath: str) -> SectionProxy:
+    c = ConfigParser()
+    # Append the mandatory section...
+    with open(filepath) as lines:
+        lines = chain(["[DEFAULT]"], lines)
+        c.read_file(lines)
+    return c["DEFAULT"]
+
+
+def main(filepath: str, key: Optional[str]):
+    props = load_props(filepath)
+    if key:
+        print(props[key])
+    else:
+        for key in props.keys():
+            print(key)
+
+if __name__ == '__main__':
+    main(sys.argv[1], sys.argv.get(2, None))
