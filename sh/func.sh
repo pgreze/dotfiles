@@ -6,7 +6,8 @@ mkcd() {
   if [ $# -eq 0 ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     mkdir --help
   else
-    mkdir $* && cd "${@: -1}"
+    mkdir -v $*
+    cd "${@: -1}"
   fi
 }
 alias cdmk=mkcd
