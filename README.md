@@ -33,7 +33,9 @@ brew install python@2.rb && rm python@2.rb
 brew install pyenv && pyenv install 2.7.18
 
 # TODO: kibi fdfind ytop licensor
-brew install mas # https://github.com/mas-cli/mas 📦 Mac App Store command line interface
+brew install mas        # https://github.com/mas-cli/mas 📦 Mac App Store command line interface
+mas install 539883307   # LINE
+mas install 747648890   # Telegram
 brew install robotsandpencils/made/xcodes # Allowing to install/manage several XCode versions.
 ```
 
