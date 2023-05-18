@@ -42,7 +42,7 @@ pr_merged() { # Common workflow after a PR was merged
     git checkout "$base_branch"
     git pull origin "$base_branch"
     git fetch -p origin
-    git branch -D "$current_branch"
+    printf "💣 " && git branch -D "$current_branch"
 }
 
 gclone() {
