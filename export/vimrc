@@ -135,7 +135,7 @@ set updatecount=0
 set secure
 
 " Color scheme
-color peachpuff
+" color peachpuff
 
 " Highlight syntax
 syntax enable
