@@ -12,7 +12,7 @@ if [ -d "$HOME/.sdkman" ]; then
     [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
 fi
 
-sdk-howto() {
+sdk_howto() {
     echo "
 https://sdkman.io/usage
 
@@ -38,3 +38,4 @@ sdk version
 sdk selfupdate (force) # add 'force' to reinstall
 "
 }
+alias sdk-howto=sdk_howto
