@@ -45,9 +45,14 @@
 	autoSetupRemote = true
 [pull]
 	rebase = true
+    autosquash = true
 [branch]
 	autoSetupMerge = always
 [init]
 	defaultBranch = main
 [url "git@github.com:"]
     insteadOf = https://github.com/
+[commit]
+	verbose = true
+[merge]
+	conflictstyle = zdiff3
