@@ -18,6 +18,8 @@ setup_android_home "/usr/local/opt/android-sdk"   # 🤷
 
 if [ ! -z $ANDROID_HOME ]; then
     export PATH="$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH"
+    # Export build-tools latest version
+    export PATH="$ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools/ | tail -n 1):$PATH"
 fi
 
 ###
@@ -38,7 +40,7 @@ function android_set_jdk {
     export JAVA_HOME="$android_studio/Contents/jre/jdk/Contents/Home"
 }
 
-function icons_android {
+function android_icons {
     local dim="$1"
     local icon="$2"
     local target="$3"
@@ -71,3 +73,19 @@ function android_take_picture {
 
 alias adb_install_work='adb -d install --user $(adb -d shell pm list users | grep Work | grep -oE "[0-9]+" | head -n 1)'
 alias adb_deeplink='adb shell am start -d'
+
+android_keystore_fingerprints() {
+    keytool -list -v -keystore "$1" -alias ${2:-androiddebugkey} -storepass android -keypass android
+}
+
+apkverify() {
+    if [ -z $1 ];then
+        echo "Missing apk path" >&2
+        return
+    fi
+    echo "$ apksigner verify -v $1"
+    apksigner verify -v $1
+    echo
+    echo "$ apksigner verify --print-certs $1"
+    apksigner verify --print-certs $1
+}
