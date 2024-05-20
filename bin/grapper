@@ -34,6 +34,8 @@ TMP_DIR="$(mktemp -d)"
 trap "rm -rf $TMP_DIR" EXIT
 touch "$TMP_DIR/settings.gradle"
 
+unset JAVA_OPTS
+unset GRADLE_OPTS
 GRADLE_ARGS="-q wrapper --gradle-version $VERSION --distribution-type ${DIST_TYPE:-bin}"
 if (type gradle >/tmp/null 2>/tmp/null); then
     gradle=gradle
@@ -45,7 +47,7 @@ else
     gradle="$(ls "$gradle_dists/$gradle_folder/"*/*"/bin/gradle")"
     echo "~/.gradle/wrapper/dists/$gradle_folder/../gradle $GRADLE_ARGS"
 fi
-"$gradle" -p "$TMP_DIR" -Porg.gradle.daemon=false $GRADLE_ARGS
+"$gradle" -p "$TMP_DIR" --no-daemon -Porg.gradle.daemon=false $GRADLE_ARGS
 echo
 
 for file in "$TMP_DIR/"gradle{/wrapper/*,w*}; do
