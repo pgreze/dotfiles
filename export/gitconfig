@@ -1,6 +1,7 @@
 [user]
 	name = pgreze
 	email = pierrick.greze@gmail.com
+	signingkey = /Users/pgreze/.ssh/id_rsa.pub
 [giggle]
 	main-window-maximized = false
 	main-window-geometry = 962x807+1600+0
@@ -52,7 +53,10 @@
 	defaultBranch = main
 [url "git@github.com:"]
     insteadOf = https://github.com/
-[commit]
-	verbose = true
 [merge]
 	conflictstyle = zdiff3
+[gpg]
+	format = ssh
+[commit]
+	gpgsign = true
+	verbose = true
