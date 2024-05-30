@@ -48,10 +48,14 @@ pr_merged() { # Common workflow after a PR was merged
 gclone() {
     if [ -z "$1" ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
         __gclone_usage && return 0
+    elif [ -z "$1" ]; then
+        __gclone_usage && return 1
     elif [[ "$1" == *github.com* ]]; then
         local repo="$1"
-    elif [ -z "$2" ]; then
-        __gclone_usage && return 1
+    elif [ -z "$2" ] || [[ "$2" == -* ]]; then
+        local user="$(pwd | xargs basename)"
+        local repo="git@github.com:$user/$1.git"
+        confirm "git clone $repo ?" || (__gclone_usage && return 0)
     else
         local repo="git@github.com:$1/$2.git"
         shift
@@ -60,12 +64,11 @@ gclone() {
     local args=("$@")
 
     # Clone repository
-    LOGS="$(mktemp)"
-    trap "rm $LOGS" EXIT
-    git clone "${args[@]}" --progress "${repo}" 2>&1 | tee "$LOGS"
+    LOGS=$(git clone "${args[@]}" --progress "${repo}" 2>&1)
+    echo $LOGS
 
     # Resolve created folder and move in
-    FOLDER=$(head -1 $LOGS | cut -d\' -f2)
+    FOLDER=$(echo "$LOGS" | head -1 | cut -d\' -f2)
     if [ -z "$FOLDER" ]; then
         echo 2>&1 "Could not resolve output directory"
         return 1
@@ -75,10 +78,12 @@ gclone() {
 }
 
 __gclone_usage() {
-    echo "Usage: gclone git@github.com:user/repo.git [extra-args...]"
+    printf "This command is cloning a git repo AND cd to the newly created directory.\n\n"
+    echo "Usage: gclone repo [extra-args...]"
     echo "Usage: gclone user repo [extra-args...]"
+    echo "Usage: gclone git@github.com:user/repo.git [extra-args...]"
+    printf "\nIf no user is provided, current directory name is used.\n"
     printf "\nPossible extra-args: --single-branch --depth 1\n"
-    printf "\nThis command is cloning a git repo AND cd to the newly created directory.\n"
 }
 
 git_diff_count() {
