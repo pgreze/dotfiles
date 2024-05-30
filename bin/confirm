@@ -1,0 +1,22 @@
+#!/usr/bin/env zsh
+
+usage() {
+    printf "Ask the user a yes/no question and return user's choice with the status code.\n\n"
+    echo "Usage: ${1##*/} <prompt>"
+}
+
+if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
+    usage "$0" && exit 0
+elif [ -z "$1" ]; then
+    usage "$0" 1>&2 && exit 1
+fi
+
+while true; do
+    echo "$1 [Y/n]: \c"
+    read reply || echo # Print a newline if ^D is pressed.
+    case "$reply" in
+        [yY]*) exit 0 ;;
+        [nN]*) exit 1 ;;
+        *) ;;
+    esac
+done

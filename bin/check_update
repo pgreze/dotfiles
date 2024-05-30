@@ -34,14 +34,9 @@ if mkdir "$CACHE_LOCK" 2>/dev/null; then
     last_epoch=$(cat "$CACHE_FILE")
     epoch_diff=$(($(_current_epoch) - $last_epoch))
     if [ $epoch_diff -gt $UPDATE_INTERVAL_DAYS ]; then
-      if [ "$UPDATE_DISABLE_PROMPT" = "true" ]; then
+      if [ "$UPDATE_DISABLE_PROMPT" = "true" ] || \
+        confirm "[Auto update] Would you like to update $CACHE_NAME?"; then
         UPDATE_RETURN=0
-      else
-        echo "[Auto update] Would you like to update $CACHE_NAME? [Y/n]: \c"
-        read line
-        if [[ "$line" == Y* ]] || [[ "$line" == y* ]] || [ -z "$line" ]; then
-          UPDATE_RETURN=0
-        fi
       fi
     fi
   fi
