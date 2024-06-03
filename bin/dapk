@@ -7,7 +7,6 @@ __version__ = "1.0"
 import re
 import argparse
 import subprocess
-import itertools
 from pathlib import Path
 
 def resolve_main_activity(module_path:Path=None, apk_path:Path=None):

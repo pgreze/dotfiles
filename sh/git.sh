@@ -26,7 +26,8 @@ psed() {
     local search_reg="$1"
     local replace_reg="$2"
     local pathspecs="${@:3}"
-    git grep --null --full-name --name-only --perl-regexp -e "$search_reg" $pathspecs | xargs -0 perl -i -p -e "s:$search_reg:$replace_reg:g"
+    git grep --null --full-name --name-only --perl-regexp -e "$search_reg" $pathspecs | \
+        xargs -0 perl -i -p -e "s:$search_reg:$replace_reg:g"
 }
 
 pr_merged() { # Common workflow after a PR was merged
@@ -97,11 +98,14 @@ git_diff_count() {
     echo $(( $target_count - $common_ancestor_count ))
 }
 
+alias empty_commit="gcmsg 'Empty commit' --allow-empty"
+alias rerun_ci="gcmsg 'Re-run CI' --allow-empty"
+
+# Autocompletion for separate binaries.
 alias grv="git review"
 _git_review() {
   __gitcomp_nl "$(__git_refs)"
 }
-
 alias bfm="git bfm"
 _git_bfm() {
   __gitcomp_nl "$(__git_refs)"

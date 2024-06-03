@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 usage() {
-    echo "Usage: $0 branch [remote] [trunk-branch]"
+    echo "Usage: ${1##*/} branch [remote] [trunk-branch]"
 }
 
 function git_main_branch() {
@@ -17,10 +17,10 @@ function git_main_branch() {
 }
 
 if [[ $# -eq 0 ]]; then
-    usage
+    usage "$0" 1>&2
     exit 1
 elif [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
-    usage
+    usage "$0"
     exit 0
 elif [[ $# -eq 1 ]]; then
     BRANCH="$1"
