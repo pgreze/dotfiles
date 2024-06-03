@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# https://kvz.io/blog/bash-best-practices.html
+# Exit on error. Append "|| true" if you expect an error.
+set -o errexit
+# Exit on error inside any functions or subshells.
+set -o errtrace
+# Do not allow use of undefined vars. Use ${VAR:-} to use an undefined VAR
+set -o nounset
+# Catch the error in case mysqldump fails (but gzip succeeds) in `mysqldump |gzip`
+set -o pipefail
+# Turn on traces, useful while debugging.
+# set -o xtrace
+
+usage() {
+    echo "Drop X line(s) and print the remaining ones."
+    echo
+    echo "Usage: ${1##*/} <number>"
+    echo
+    echo "Parameters:"
+    echo "  <number>  The number of lines to drop."
+    echo
+    echo "Options:"
+    echo "  -h, --help  Display this help and exit."
+}
+
+if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
+    usage "$0" && exit 0
+elif [ -z "$1" ]; then
+    usage "$0" 1>&2 && exit 1
+elif ! [ "$1" -eq "$1" ] 2>/dev/null; then
+    echo "Error: '$1' is not a number." 1>&2
+    exit 1
+fi
+
+dropped_lines="$1"
+# TODO: support `printf "hello\nworld" | drop 1` printing nothing.
+while read line; do
+    if [ "$dropped_lines" -gt 0 ]; then
+        dropped_lines=$((dropped_lines - 1))
+    else
+        echo "$line"
+    fi
+done
