@@ -106,7 +106,3 @@ alias grv="git review"
 _git_review() {
   __gitcomp_nl "$(__git_refs)"
 }
-alias bfm="git bfm"
-_git_bfm() {
-  __gitcomp_nl "$(__git_refs)"
-}
