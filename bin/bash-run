@@ -1,4 +1,16 @@
 #!/usr/bin/env bash
+# https://kvz.io/blog/bash-best-practices.html
+# Exit on error. Append "|| true" if you expect an error.
+set -o errexit
+# Exit on error inside any functions or subshells.
+set -o errtrace
+# Do not allow use of undefined vars. Use ${VAR:-} to use an undefined VAR
+set -o nounset
+# Catch the error in case mysqldump fails (but gzip succeeds) in `mysqldump |gzip`
+set -o pipefail
+# Turn on traces, useful while debugging.
+# set -o xtrace
+
 #
 # when using ZSH every day, quickly test bash oneliners can be a pain.
 # This script is creating a temporary file with first arg as content,

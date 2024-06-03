@@ -1,8 +1,15 @@
 #!/usr/bin/env sh
 # https://kvz.io/blog/bash-best-practices.html
+# Exit on error. Append "|| true" if you expect an error.
 set -o errexit
-set -o pipefail
+# Exit on error inside any functions or subshells.
+set -o errtrace
+# Do not allow use of undefined vars. Use ${VAR:-} to use an undefined VAR
 set -o nounset
+# Catch the error in case mysqldump fails (but gzip succeeds) in `mysqldump |gzip`
+set -o pipefail
+# Turn on traces, useful while debugging.
+# set -o xtrace
 
 if [ "${1:-}" == "-h" ] || [ "${1:-}" == "--help" ]; then
     echo "Usage: $(basename $0) [version]"
