@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Fork from .oh-my-zsh/plugins/git/git.plugin.zsh
+
+command git rev-parse --git-dir &>/dev/null || exit 1
+
+for branch in {main,trunk,mainline,default,stable,master}; do
+    for ref in refs/{heads,remotes/{origin,upstream}}; do
+        if command git show-ref -q --verify "$ref/$branch"; then
+            echo $branch
+            exit 0
+        fi
+    done
+done
+
+# If no main branch was found, fall back to master but return error
+echo master
+exit 1

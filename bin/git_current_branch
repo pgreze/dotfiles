@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Fork from .oh-my-zsh/plugins/git/git.plugin.zsh
+
+ref=$(git symbolic-ref --quiet HEAD 2> /dev/null)
+echo ${ref#refs/heads/}
+

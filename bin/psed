@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# https://kvz.io/blog/bash-best-practices.html
+# Exit on error. Append "|| true" if you expect an error.
+set -o errexit
+# Exit on error inside any functions or subshells.
+set -o errtrace
+# Do not allow use of undefined vars. Use ${VAR:-} to use an undefined VAR
+set -o nounset
+# Catch the error in case mysqldump fails (but gzip succeeds) in `mysqldump |gzip`
+set -o pipefail
+# Turn on traces, useful while debugging.
+# set -o xtrace
+
+# https://stackoverflow.com/a/12056944
+if [[ $# < 2 ]] ; then
+    echo "Usage: $0 \"search_reg\" \"replace_reg\" [\"<pathspec>\"...]"
+    return 1
+fi
+
+search_reg="$1"
+replace_reg="$2"
+pathspecs="${@:3}"
+
+git grep --null --full-name --name-only --perl-regexp -e "$search_reg" $pathspecs | \
+    xargs -0 perl -i -p -e "s:$search_reg:$replace_reg:g"

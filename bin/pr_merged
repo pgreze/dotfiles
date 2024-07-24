@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# https://kvz.io/blog/bash-best-practices.html
+# Exit on error. Append "|| true" if you expect an error.
+set -o errexit
+# Exit on error inside any functions or subshells.
+set -o errtrace
+# Do not allow use of undefined vars. Use ${VAR:-} to use an undefined VAR
+set -o nounset
+# Catch the error in case mysqldump fails (but gzip succeeds) in `mysqldump |gzip`
+set -o pipefail
+# Turn on traces, useful while debugging.
+# set -o xtrace
+
+base_branch="${1:-$(git_main_branch)}"
+current_branch="$(git_current_branch)"
+
+if [ $(echo "$current_branch" | wc -l) != 1 ]; then
+    echo "More than 1 current branch found: $current_branch" 1>&2
+    exit 1
+elif [ "$current_branch" = "$base_branch" ]; then
+    echo "Already on the base branch ($base_branch)" 1>&2
+    exit 2
+fi
+
+git checkout "$base_branch"
+git pull origin "$base_branch"
+git fetch -p origin
+printf "💣 " && git branch -D "$current_branch"

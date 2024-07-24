@@ -23,6 +23,7 @@
     syntax-theme = Monokai Extended
 [interactive]
     diffFilter = delta --color-only
+    singlekey = true
 [alias]
 	st = status -sb
 	df = diff --word-diff

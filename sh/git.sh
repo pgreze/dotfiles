@@ -19,36 +19,15 @@ alias wip="gcmsg 'WIP 🛠'"
 alias empty_commit="gcmsg 'Empty commit 🫙' --allow-empty"
 alias rerun_ci="gcmsg 'Re-run CI 😣' --allow-empty"
 
-psed() {
-    # https://stackoverflow.com/a/12056944
-    if [[ $# < 2 ]] ; then
-        echo "Usage: $0 \"search_reg\" \"replace_reg\" [\"<pathspec>\"...]"
-        return 1
-    fi
-    local search_reg="$1"
-    local replace_reg="$2"
-    local pathspecs="${@:3}"
-    git grep --null --full-name --name-only --perl-regexp -e "$search_reg" $pathspecs | \
-        xargs -0 perl -i -p -e "s:$search_reg:$replace_reg:g"
+git_branch_from_main() {
+  [ -z "${1:-}" ] && echo 2>&1 "Usage: $0 [new-branch]" && return 1
+  local new_branch="$1"
+  local base_branch="$(git_main_branch)"
+  printf "Create $new_branch from $base_branch\n\n"
+  git fetch origin "$base_branch"
+  git checkout -b "$1" "origin/$base_branch"
 }
-
-# Common workflow after a PR was merged
-pr_merged() {
-    # Have to be a function, or we cannot use following functions.
-    local base_branch="${1:-$(git_main_branch)}"
-    local current_branch="$(git_current_branch)"
-    if [ $(echo "$current_branch" | wc -l) != 1 ]; then
-        echo "More than 1 current branch found: $current_branch" 1>&2
-        return 1
-    elif [ "$current_branch" = "$base_branch" ]; then
-        echo "Already on the base branch ($base_branch)" 1>&2
-        return 2
-    fi
-    git checkout "$base_branch"
-    git pull origin "$base_branch"
-    git fetch -p origin
-    printf "💣 " && git branch -D "$current_branch"
-}
+alias gbfm=git_branch_from_main
 
 git_diff_count() {
     [ -z "${1:-}" ] && echo 2>&1 "Usage: $0 target-branch [base-branch]" && return 1
