@@ -53,3 +53,11 @@ extract() {
     return 1
   fi
 }
+
+sortargs() {
+  local USAGE="Usage: $0 a1 a3 a2 => a1 a2 a3"
+  [ $# = 0 ] && echo 1>&2 $USAGE && return 1
+  [ $# = 1 ] && [ "$1" = -h ] && echo $USAGE && return 0
+  python3 -c "import sys; print(' '.join(sorted(sys.argv[1:])))" "$@"
+}
+alias sorta=sortargs
