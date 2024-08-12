@@ -20,16 +20,35 @@ usage() {
     echo "  <number>  The number of lines to drop."
     echo
     echo "Options:"
-    echo "  -h, --help  Display this help and exit."
+    echo "  -v, --verbose   Display dropped lines."
+    echo "  -h, --help  　　Display this help and exit."
+}
+
+is_verbose_flag() {
+    if [ "$1" = "--verbose" ] || [ "$1" = "-v" ]; then
+        return 0
+    else
+        return 1
+    fi
 }
 
 if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
     usage "$0" && exit 0
 elif [ -z "$1" ]; then
     usage "$0" 1>&2 && exit 1
-elif ! [ "$1" -eq "$1" ] 2>/dev/null; then
+fi
+
+VERBOSE=false
+if is_verbose_flag "$1"; then
+    VERBOSE=true
+    shift
+fi
+if ! [ "$1" -eq "$1" ] 2>/dev/null; then
     echo "Error: '$1' is not a number." 1>&2
     exit 1
+fi
+if is_verbose_flag "${2:-}"; then
+    VERBOSE=true
 fi
 
 dropped_lines="$1"
@@ -37,6 +56,7 @@ dropped_lines="$1"
 while read line; do
     if [ "$dropped_lines" -gt 0 ]; then
         dropped_lines=$((dropped_lines - 1))
+        if [ "$VERBOSE" = true ]; then echo 1>&2 "DROP $line"; fi
     else
         echo "$line"
     fi
