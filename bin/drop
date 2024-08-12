@@ -53,7 +53,7 @@ fi
 
 dropped_lines="$1"
 # TODO: support `printf "hello\nworld" | drop 1` printing nothing.
-while read line; do
+while IFS= read line; do
     if [ "$dropped_lines" -gt 0 ]; then
         dropped_lines=$((dropped_lines - 1))
         if [ "$VERBOSE" = true ]; then echo 1>&2 "DROP $line"; fi
