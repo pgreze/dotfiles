@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+i=0
+for var in "$@"; do
+  echo "$i=$var"
+  ((i+=1))
+done
