@@ -2,16 +2,6 @@
 ### New shiny Rust/Go based CLI
 ###
 
-# https://github.com/ogham/exa
-if command -v exa > /dev/null; then
-    alias l="exa -la"
-    alias ls="exa"
-elif [[ "$(uname)" == 'Darwin' ]]; then
-    echo "TODO: brew install exa"
-else
-    echo "TODO: sudo apt install exa"
-fi
-
 # https://github.com/sharkdp/bat
 if [[ "$(uname)" == 'Darwin' ]] && command -v bat > /dev/null; then
     alias catt="$(which cat)"
