@@ -6,6 +6,16 @@ export PATH="/usr/local/opt/curl/bin:$PATH"
 
 alias restart_backup_and_sync="killall Backup\ and\ Sync && sleep 10 && open -a /Applications/Backup\ and\ Sync.app"
 
+switch_scroll_direction() {
+    if [[ "$(defaults read -g com.apple.swipescrolldirection)" -eq 0 ]]; then
+        echo "Switch to natural scrolling"
+        defaults write -g com.apple.swipescrolldirection -boolean YES
+    else
+        echo "Switch to non natural scrolling"
+        defaults write -g com.apple.swipescrolldirection -boolean NO
+    fi
+}
+
 function osx_notification {
     if [ $# -eq 0 ]; then
         echo "Usage: $0 [text...]"

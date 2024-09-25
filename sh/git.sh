@@ -17,7 +17,7 @@ alias gfom='git_main_branch | while read br; do gfo -v "$br:$br";done'
 alias initial_commit="gcmsg 'Initial commit 🚀'"
 alias wip="gcmsg 'WIP 🛠'"
 alias empty_commit="gcmsg 'Empty commit 🫙' --allow-empty"
-alias rerun_ci="gcmsg 'Re-run CI 😣' --allow-empty"
+alias rerun_ci="gcmsg 'Re-run CI 💸' --allow-empty"
 
 git_branch_from_main() {
   [ -z "${1:-}" ] && echo 2>&1 "Usage: $0 [new-branch]" && return 1
