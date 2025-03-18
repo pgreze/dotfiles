@@ -13,6 +13,7 @@ alias gdm='git diff $(git_main_branch)'
 alias grbi='git rebase -i --autosquash'
 alias gri='git rebase -i --autosquash'
 alias gfom='git_main_branch | while read br; do gfo -v "$br:$br";done'
+alias grbmm='git_main_branch | while read br; do gfo -v "$br:$br" && git rebase "$br";done'
 
 alias initial_commit="gcmsg 'Initial commit 🚀'"
 alias wip="gcmsg 'WIP 🛠'"
@@ -25,6 +26,7 @@ git_branch_from_main() {
   local base_branch="$(git_main_branch)"
   printf "Create $new_branch from $base_branch\n\n"
   git fetch origin "$base_branch"
+  echo
   git checkout -b "$1" "origin/$base_branch"
 }
 alias gbfm=git_branch_from_main

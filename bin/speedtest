@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# https://kvz.io/blog/bash-best-practices.html
+# Exit on error. Append "|| true" if you expect an error.
+set -o errexit
+# Exit on error inside any functions or subshells.
+set -o errtrace
+# Do not allow use of undefined vars. Use ${VAR:-} to use an undefined VAR
+set -o nounset
+# Catch the error in case mysqldump fails (but gzip succeeds) in `mysqldump |gzip`
+set -o pipefail
+# Turn on traces, useful while debugging.
+# set -o xtrace
+
+# Check if the user has provided a URL
+if [ -z "$1" ]; then
+  echo "Usage: $0 <url>"
+  exit 1
+fi
+URL="$1"
+
+download_info=$(curl -w "%{time_total} %{size_download}" -o /dev/null -s "$URL")
+time_total=$(echo "$download_info" | cut -d' ' -f1)
+size_download=$(echo "$download_info" | cut -d' ' -f2)
+
+if [[ "$(echo "$time_total > 0" | bc)" = 1 ]]; then
+  # Calculate speed in KB/s
+  speed_kb=$(echo "$size_download / 1024 / $time_total" | bc -l)
+  echo "Download speed: $(printf "%.2f" $speed_kb) KB/s"
+else
+  echo "Unable to calculate speed: Download time is too low"
+fi

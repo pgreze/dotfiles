@@ -22,7 +22,7 @@ brew doctor
 
 # Essentials
 brew install coreutils bash grep findutils curl wget gzip tree ncdu htop autojump tmux
-brew install python3 latex2rtf mkvtoolnix irssi ffmpeg gcc cmake
+brew install python3 latex2rtf mkvtoolnix irssi ffmpeg gcc cmake kubectx
 brew install git gh git-flow git-delta # git-subrepo
 brew install exa procs bat ripgrep dust bandwhich miniserve pipx
 
