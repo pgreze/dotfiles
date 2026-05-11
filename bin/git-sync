@@ -12,16 +12,6 @@ set -o pipefail
 # set -o xtrace
 
 base_branch="${1:-$(git_main_branch)}"
-current_branch="$(git_current_branch)"
 
-if [ $(echo "$current_branch" | wc -l) != 1 ]; then
-    echo "More than 1 current branch found: $current_branch" 1>&2
-    exit 1
-elif [ "$current_branch" = "$base_branch" ]; then
-    echo "Already on the base branch ($base_branch)" 1>&2
-    exit 2
-fi
-
-git checkout "$base_branch"
-git-sync "$base_branch"
-printf "💣 " && git branch -D "$current_branch"
+git pull origin "$base_branch"
+git fetch -p origin

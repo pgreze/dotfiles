@@ -2,26 +2,15 @@
 name: opening-pull-requests
 description: |
   INVOKE WHEN: User asks to open a PR, create a pull request, submit a PR, push and open PR, or similar.
-  COVERS: Creating GitHub pull requests with gh CLI following pgreze's personal workflow: draft by default, branch naming (pgreze/ prefix), PR description with WHAT/WHY/HOW TO TEST sections, always asking for ticket/issue/Slack links to include in the description.
-  DO NOT INVOKE FOR: Reviewing existing PRs, merging PRs, or updating PR metadata after creation.
+  COVERS: Creating GitHub pull requests with gh CLI following pgreze's personal workflow: draft by default, PR description with WHAT/WHY/HOW TO TEST sections, always asking for ticket/issue/Slack links to include in the description.
+  DO NOT INVOKE FOR: Reviewing existing PRs, merging PRs, updating PR metadata after creation, or creating/switching branches.
 ---
 
 # Opening Pull Requests
 
 You are helping pgreze open a GitHub PR. Follow this workflow every time, without exception.
 
-## Step 1 — Branch Name
-
-If not already on a feature branch, ensure the branch name starts with `pgreze/`.
-
-```bash
-# Check current branch
-git branch --show-current
-```
-
-If the branch doesn't start with `pgreze/`, rename it or ask the user to confirm the intended branch name before proceeding.
-
-## Step 2 — Gather Required Info (ALWAYS ask these)
+## Step 1 — Gather Required Info (ALWAYS ask these)
 
 Before creating the PR, always ask for the following if not already provided:
 
@@ -29,7 +18,7 @@ Before creating the PR, always ask for the following if not already provided:
 2. Slack thread link — If relevant. Ask: "Is there a Slack thread to reference?"
 3. Draft or ready? — Default is DRAFT unless the user explicitly says "not draft", "ready for review", or "merge-ready".
 
-## Step 3 — Find or Build the PR Description Template
+## Step 2 — Find or Build the PR Description Template
 
 Check if the repo has a PR template:
 
@@ -44,7 +33,7 @@ cat .github/PULL_REQUEST_TEMPLATE.md 2>/dev/null || echo "NO_TEMPLATE"
 
 Use the template from `PULL_REQUEST_TEMPLATE.md` in this skill's directory (`~/.claude/skills/opening-pull-requests/PULL_REQUEST_TEMPLATE.md`).
 
-## Step 4 — Fill in the Description
+## Step 3 — Fill in the Description
 
 Fill in the template sections:
 
@@ -59,7 +48,7 @@ Always append the ticket/issue and Slack thread links on top of the PR descripti
 - Slack: <slack-thread-link>  (only if provided)
 ```
 
-## Step 5 — Create the PR with gh CLI
+## Step 4 — Create the PR with gh CLI
 
 Use the `gh pr create` command to open the PR after having pushed the new branch, passing the filled description and setting the draft status based on user input.
 
@@ -70,7 +59,7 @@ EOF
 )"
 ```
 
-## Step 6 — Confirm and Share
+## Step 5 — Confirm and Share
 
 After creation, output the PR URL and confirm:
 - Whether it was created as draft or ready
@@ -82,7 +71,6 @@ After creation, output the PR URL and confirm:
 | Rule | Default |
 | --- | --- |
 | Draft? | Yes (unless user says otherwise) |
-| Branch Prefix | pgreze/ |
 | Template source | .github/PULL_REQUEST_TEMPLATE.md or default template |
 | Required link | ALWAYS ask - jira / github issue / linear / etc |
 | Slack link | Ask - include if provided |
