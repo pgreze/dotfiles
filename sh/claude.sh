@@ -39,12 +39,16 @@ _claude_install() {
         jq '.hooks.PreToolUse = ((.hooks.PreToolUse // []) + [{"matcher": "Bash", "hooks": [{"type": "command", "command": "~/.claude/hooks/block-dangerous-commands.sh"}]}])' "$settings" > "$tmp" && mv "$tmp" "$settings"
     fi
 
-    # Ensure CLAUDE.md has the PR workflow reference
+    # Ensure all skills are referenced in CLAUDE.md
     local claude_md="$dst/CLAUDE.md"
     [ -f "$claude_md" ] || touch "$claude_md"
     if ! grep -qF "opening-pull-requests" "$claude_md"; then
         [ -s "$claude_md" ] && printf '\n' >> "$claude_md"
-        printf '## PR Workflow\n\nWhen opening pull requests, invoke the `opening-pull-requests` skill.\n' >> "$claude_md"
+        printf '## opening-pull-requests\n\nWhen user asks to open a PR, create a pull request, submit a PR, push and open PR, or similar, invoke the `opening-pull-requests` skill.\n' >> "$claude_md"
+    fi
+    if ! grep -qF "git-new-branch" "$claude_md"; then
+        [ -s "$claude_md" ] && printf '\n' >> "$claude_md"
+        printf '## git-new-branch\n\nWhen user asks to start a new branch, create a branch, begin new work, start a new feature/task, or switch to a fresh branch, create a new branch, or similar, invoke the `git-new-branch` skill.\n' >> "$claude_md"
     fi
 }
 _claude_install
