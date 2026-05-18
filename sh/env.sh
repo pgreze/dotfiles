@@ -5,13 +5,15 @@
 # EDITOR
 command -v code > /dev/null && export EDITOR=code || export EDITOR=vim
 
-# Add ~/bin to PATH
-[ -d "$HOME/bin" ] && export PATH="$PATH:$HOME/bin"
+# Create local/ files if not found
+for file in zshrc zshenv; do
+  [ -d "$DOTFILES/local" ] || mkdir -p "$DOTFILES/local"
+  target="$DOTFILES/local/$file"
+  if [ ! -f "$target" ]; then
+    touch "$target"
+    echo "Created this machine only $target"
+  fi
+done
 
-# Load ~/.my/local.sh
-if [ -e $DOTFILES/local.sh ]; then
-  source "$DOTFILES/local.sh"
-else
-  echo "Creates $DOTFILES/local.sh for your local specific config"
-  touch "$DOTFILES/local.sh"
-fi
+# Load this machine only configuration.
+source "$DOTFILES/local/zshrc"

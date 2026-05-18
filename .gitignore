@@ -1,7 +1,8 @@
-export/vim/.netrwhist
-# Local config
-local.sh
-# Visual studio code folder
 .vscode
+export/vim/.netrwhist
+
+# This machine only files
+/local/
+
 # Cache folder, inspired by oh-my-zsh
 .cache

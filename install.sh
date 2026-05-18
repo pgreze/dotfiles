@@ -39,8 +39,4 @@ for i in export/*;do
 done
 popd
 
-# Finish with our custom theme
-rm -f "$HOME/.oh-my-zsh/themes/pgreze.zsh-theme"
-ln -s "$PWD/pgreze.zsh-theme" "$HOME/.oh-my-zsh/themes/"
-
 echo ">> dotfiles installed :D"
