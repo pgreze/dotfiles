@@ -2,8 +2,9 @@
 ### General environment configuration.
 ###
 
-# EDITOR
 command -v code > /dev/null && export EDITOR=code || export EDITOR=vim
+
+command -v bat > /dev/null && export PAGER=bat
 
 # Create local/ files if not found
 for file in zshrc zshenv; do
