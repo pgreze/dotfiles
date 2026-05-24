@@ -32,10 +32,8 @@ brew install python@2.rb && rm python@2.rb
 ## Alternative with pyenv:
 brew install pyenv && pyenv install 2.7.18
 
-# TODO: kibi fdfind ytop licensor
-brew install mas        # https://github.com/mas-cli/mas 📦 Mac App Store command line interface
-mas install 539883307   # LINE
-mas install 747648890   # Telegram
+# TODO: kibi fdfind ytop licensor LINE
+# brew install mas        # https://github.com/mas-cli/mas 📦 Mac App Store command line interface
 brew install robotsandpencils/made/xcodes # Allowing to install/manage several XCode versions.
 ```
 
@@ -43,9 +41,8 @@ Homebrew cask:
 ```bash
 # Notice: lunar is not working well with my LG ultrawide
 brew install --cask shifty keepassxc google-drive the-unarchiver qlmarkdown
-brew install --cask obsidian rectangle bartender nordvpn
+brew install --cask obsidian rectangle bartender nordvpn telegram
 brew install --cask iterm2 visual-studio-code trailer sloth
-# TODO: telegram
 brew install --cask android-sdk jetbrains-toolbox jd-gui visualvm # intellij-idea-ce android-studio
 brew install --cask transmission slack discord vlc firefox virtualbox android-file-transfer libreoffice skype electrum cyberduck
 brew install --cask docker docker-machine
