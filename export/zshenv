@@ -7,6 +7,9 @@
 # Add /opt/homebrew/bin to PATH
 [ -d "/opt/homebrew/bin" ] && export PATH="/opt/homebrew/bin:$PATH"
 
+# Add /opt/homebrew/sbin to PATH
+[ -d "/opt/homebrew/sbin" ] && export PATH="/opt/homebrew/sbin:$PATH"
+
 # Add ~/.my/bin to PATH
 [ -d "$HOME/.my/bin" ] && export PATH="$HOME/.my/bin:$PATH"
 
