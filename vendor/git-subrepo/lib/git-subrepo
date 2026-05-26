@@ -30,9 +30,9 @@ fi
 bash+:import :std can version-check
 
 
-VERSION=0.4.5
+VERSION=0.4.9
 REQUIRED_BASH_VERSION=4.0
-REQUIRED_GIT_VERSION=2.7.0
+REQUIRED_GIT_VERSION=2.23.0
 GIT_TMP=$(git rev-parse --git-common-dir 2> /dev/null || echo .git)/tmp
 
 # `git rev-parse` turns this into a getopt parser and a command usage message:
@@ -64,7 +64,7 @@ Options:
 h           Show the command summary
 help        Help overview
 version     Print the git-subrepo version number
- 
+
 a,all       Perform command on all current subrepos
 A,ALL       Perform command on all subrepos and subsubrepos
 b,branch=   Specify the upstream branch to push/pull/fetch
@@ -77,7 +77,7 @@ file=       Specify a commit message file
 r,remote=   Specify the upstream remote to push/pull/fetch
 s,squash    Squash commits on push
 u,update    Add the --branch and/or --remote overrides to .gitrepo
- 
+
 q,quiet     Show minimal output
 v,verbose   Show verbose output
 d,debug     Show the actual commands used
@@ -166,7 +166,7 @@ main() {
     # Run the command on all subrepos
     local args=( "${command_arguments[@]}" )
     get-all-subrepos
-    for subdir in ${subrepos[*]}; do
+    for subdir in "${subrepos[@]}"; do
       command-prepare
       subrepo_remote=
       subrepo_branch=
@@ -211,8 +211,21 @@ command:clone() {
 # `git subrepo init <subdir>` command:
 command:init() {
   command-setup +subdir
+  local default_branch=
+  # Check if Git supports init.defaultbranch (Git 2.28+)
+  local git_version
+  local git_major
+  local git_minor
+  git_version=$(git --version | sed 's/git version //' | sed 's/\..*//')
+  git_major=$(echo "$git_version" | cut -d. -f1)
+  git_minor=$(echo "$git_version" | cut -d. -f2)
+  if [[ $git_major -gt 2 ]] || [[ $git_major -eq 2 && $git_minor -ge 28 ]]; then
+    default_branch=$(git config --get init.defaultbranch 2>/dev/null || echo "master")
+  else
+    default_branch="master"
+  fi
   local remote=${subrepo_remote:=none}
-  local branch=${subrepo_branch:=master}
+  local branch=${subrepo_branch:=$default_branch}
 
   # Init new subrepo from the subdir:
   subrepo:init
@@ -488,6 +501,13 @@ subrepo:clone() {
     fi
     o "Remove the old subdir."
     RUN git rm -r -- "$subdir"
+
+    if [[ -z $override_branch ]]; then
+      o "Determine the upstream head branch."
+      get-upstream-head-branch
+      subrepo_branch="$output"
+      override_branch="$output" # Force update of the branch in .gitrepo
+    fi
   else
     assert-subdir-empty
     if [[ -z $subrepo_branch ]]; then
@@ -616,6 +636,8 @@ subrepo:push() {
     fi
 
     branch_name=subrepo/$subref
+    # We must make sure that a stale worktree is removed as well
+    worktree=$GIT_TMP/$branch_name
     git:delete-branch "$branch_name"
 
     if $squash_wanted; then
@@ -654,6 +676,10 @@ subrepo:push() {
   new_upstream_head_commit=$(git rev-parse "$branch_name")
   if ! $new_upstream; then
     if [[ $upstream_head_commit == "$new_upstream_head_commit" ]]; then
+      if $branch_created; then
+        o "Remove branch '$branch_name'."
+        git:delete-branch "$branch_name"
+      fi
       OK=false
       CODE=-2
       return
@@ -731,7 +757,27 @@ subrepo:branch() {
   local first_gitrepo_commit=
 
   o "Subrepo parent: $subrepo_parent"
+
   if [[ $subrepo_parent ]]; then
+
+    # Check if the subrepo parent is an ancestor of HEAD.
+    # For example rebasing the commit that touched the subrepo
+    # could make the commit no longer match.
+    local parent_is_ancestor=
+    git merge-base --is-ancestor "$subrepo_parent" HEAD && parent_is_ancestor="true"
+    if [[ -z "$parent_is_ancestor" ]]; then
+      local prev_merge_point
+      prev_merge_point=$(git log -1 -G "commit =" --format="%H" "$gitrepo")
+        # We want the SHA of the patch before the sync point just in case someone made a modifcation in the
+        # actual sync commit
+        prev_merge_point=$(git log -1 --format="%H" "$prev_merge_point"^)
+        error "The last sync point (where upstream and the subrepo were equal) is not an ancestor. \n \
+            This is usually caused by a rebase affecting that commit. \n \
+            To recover set the subrepo parent in '$gitrepo'\n \
+            to '$prev_merge_point' \n \
+            and validate the subrepo by comparing with 'git subrepo branch $subdir'"
+    fi
+
     local prev_commit=
     local ancestor=
     o "Create new commits with parents into the subrepo fetch"
@@ -834,7 +880,7 @@ subrepo:branch() {
   local filter=$branch
   [[ $first_gitrepo_commit ]] && filter=$first_gitrepo_commit..$branch
   FAIL=false RUN git filter-branch -f --prune-empty --tree-filter \
-    "rm -f .gitrepo" "$filter"
+    "rm -f .gitrepo" -- "$filter" --first-parent
 
   git:create-worktree "$branch"
 
@@ -1020,6 +1066,11 @@ subrepo:clean() {
         git update-ref -d "$ref"
       fi
     done
+    git show-ref | while read -r hash ref; do
+      if [[ $ref == "refs/original/refs/heads/subrepo/$suffix"* ]]; then
+        git update-ref -d "$ref"
+      fi
+    done
   fi
 }
 
@@ -1142,7 +1193,7 @@ options_clean='ALL all force'
 options_clone='branch edit force message method'
 options_config='force'
 options_commit='edit fetch force message'
-options_fetch='all branch remote'
+options_fetch='all branch force remote'
 options_init='branch remote method'
 options_pull='all branch edit force message remote update'
 options_push='all branch force message remote squash update'
@@ -1239,11 +1290,11 @@ get-params() {
       if [[ $i -ge $num ]]; then
         usage-error "Command '$command' requires arg '${arg#+}'."
       fi
-      printf -v ${arg#+} -- "$value"
+      printf -v "${arg#+}" -- "$value"
     # Look for function name after ':' to provide a default value
     else
       if [[ $i -lt $num ]]; then
-        printf -v ${arg%:*} -- "$value"
+        printf -v "${arg%:*}" -- "$value"
       elif [[ $arg =~ : ]]; then
         "${arg#*:}"
       fi
@@ -1768,9 +1819,15 @@ This is the common conflict resolution workflow:
   7. git subrepo push $subdir $branch_name
 ...
   else
+    if [[ $commit_msg_file ]]; then
+    cat <<...
+  7. git subrepo commit --file=$commit_msg_file $subdir
+...
+    else
     cat <<...
   7. git subrepo commit $subdir
 ...
+    fi
   fi
 
   if [[ $command == pull && $join_method == rebase ]]; then
@@ -1957,7 +2014,7 @@ usage-error() {
 
 # Nicely report common error messages:
 error() {
-  echo -e "git-subrepo: $1" >&2
+  echo -e "git-subrepo:" "$@" >&2
   exit 1
 }
 

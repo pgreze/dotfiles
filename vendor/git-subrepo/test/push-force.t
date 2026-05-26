@@ -35,12 +35,13 @@ test-exists \
 (
   set +x
   cd "$OWNER/bar"
-  git pull
+  git pull --rebase=false
 ) &> /dev/null || die
 
 test-exists \
   "$OWNER/bar/Bar2" \
   "$OWNER/bar/Foo1" \
+
 
 # Test that a fresh repo is not contaminated
 (

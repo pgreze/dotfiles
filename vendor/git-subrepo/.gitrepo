@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://github.com/ingydotnet/git-subrepo.git
 	branch = master
-	commit = dbb99be43de639be142260a99213dc422801ffbf
-	parent = b5ece6fc41053b7b532ccf376a800901dbc536ed
+	commit = 5e0f401f877cb54c4462766eec88e3c5f23d39a6
+	parent = f86448b15c383a20ef0445c6781c0bd3eff5e446
 	method = merge
-	cmdver = 0.4.1
+	cmdver = 0.4.5
