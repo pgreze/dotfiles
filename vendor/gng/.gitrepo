@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://github.com/gdubw/gng.git
 	branch = master
-	commit = 173943b61092a1a00315f730c4054109a1c8937d
-	parent = b33b6a2e1d577084e22eef2ba22325dedb733c1a
+	commit = 317f7717e1470d22f0c6a26e30534e33b8ad4e52
+	parent = a2d4645b320f6f842d935f1b3dba38c90f733453
 	method = merge
-	cmdver = 0.4.1
+	cmdver = 0.4.5
