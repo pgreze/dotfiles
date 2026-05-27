@@ -1,41 +1,26 @@
 #!/usr/bin/env bash
-# https://kvz.io/blog/bash-best-practices.html
-# Exit on error. Append "|| true" if you expect an error.
-set -o errexit
-# Exit on error inside any functions or subshells.
-set -o errtrace
-# Do not allow use of undefined vars. Use ${VAR:-} to use an undefined VAR
-set -o nounset
-# Catch the error in case mysqldump fails (but gzip succeeds) in `mysqldump |gzip`
-set -o pipefail
-# Turn on traces, useful while debugging.
-# set -o xtrace
+#
+# Run the first argument as a bash script, with following arguments
+# passed as positional parameters ($1, $2, ...).
+#
+# Purpose: test bash-specific behavior from a non-bash shell (e.g. zsh)
+# without creating a file.
+#
 
-#
-# when using ZSH every day, quickly test bash oneliners can be a pain.
-# This script is creating a temporary file with first arg as content,
-# and runs it with following arguments.
-#
+set -o errexit -o errtrace -o nounset -o pipefail
 
 usage() {
-    printf "Usage: $(basename "$0") content [<arg>...]\n\n"
-    echo "Example: bash-run 'pargs \"\$@\"' \"hello world\" haha plop"
-    exit $1
+    printf 'Usage: %s content [<arg>...]\n\n' "$(basename "$0")"
+    echo 'Example: bash-run '\''pargs "$@"'\'' "hello world" haha plop'
+    exit "${1:-0}"
 }
+
 if [[ $# -eq 0 ]]; then
     usage 1
-elif [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
     usage 0
 fi
 
-TMP_FILE="$(mktemp)"
-chmod +x "$TMP_FILE"
-
-echo "#!/usr/bin/env bash" > "$TMP_FILE"
-echo "$1" >> "$TMP_FILE"
-
+script="$1"
 shift
-# TODO: support stdin redirection
-# https://stackoverflow.com/questions/2746553/read-values-into-a-shell-variable-from-a-pipe
-# https://unix.stackexchange.com/questions/33049/how-to-check-if-a-pipe-is-empty-and-run-a-command-on-the-data-if-it-isnt
-"$TMP_FILE" "$@"
+exec bash -c "$script" "$(basename "$0")" "$@"
