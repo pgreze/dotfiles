@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+# Trace interactive shell startup and grep for a pattern.
+#
+# Useful to find where something is defined across your shell init files
+# (.zshrc, .bashrc, config.fish, oh-my-zsh plugins, sourced helpers, ...).
+# Detects whether the caller is zsh, bash, or fish and runs the matching
+# shell with tracing enabled, so every executed line is printed.
+#
+# Finds anything that runs during shell startup, not just aliases:
+#   - aliases:   `alias py='python3'`   --> shell-trace 'py='
+#                                          shell-trace "alias py"
+#   - functions: `mycd() { ... }`       --> shell-trace 'mycd()'
+#   - exports:   `export EDITOR=nvim`   --> shell-trace 'EDITOR='
+#   - PATH adds: `path+=(/opt/bin)`     --> shell-trace '/opt/bin'
+#   - sourced:   `source ~/.work.sh`    --> shell-trace '.work.sh'
+#
+# Output:
+#   zsh/bash --> `+<file>:<line>> <command>` (click the path to jump to it)
+#   fish     --> `> <command>` only (fish_trace doesn't expose file:line;
+#                use `functions <name>` or `type <name>` to locate it)
+set -o errexit
+set -o nounset
+set -o pipefail
+
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") <pattern>
+
+Traces interactive startup of the caller shell (zsh, bash, or fish) and
+greps the trace output for <pattern>. For zsh/bash, each match shows the
+file and line that defined it; for fish, only the command is shown.
+
+Examples:
+  $(basename "$0") 'py='        # find where alias 'py' is defined
+  $(basename "$0") "alias gco"  # find a specific alias by name
+  $(basename "$0") 'mycd()'     # find where function 'mycd' is defined
+  $(basename "$0") 'EDITOR='    # find where EDITOR is set
+  $(basename "$0") '.work.sh'   # find what sources ~/.work.sh
+EOF
+    exit "$1"
+}
+
+if [[ $# -eq 0 ]]; then
+    usage 1
+elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    usage 0
+fi
+
+pattern="$1"
+
+# Detect caller shell from parent process; strip leading `-` (login shells)
+# and any directory path. Fall back to $SHELL.
+parent="$(ps -p "$PPID" -o comm= 2>/dev/null | sed -e 's|^-||' -e 's|.*/||')"
+case "$parent" in
+    zsh|bash|fish) shell="$parent" ;;
+    *)             shell="$(basename "${SHELL:-}")" ;;
+esac
+
+case "$shell" in
+    zsh)
+        PS4='+%x:%I>' zsh -i -x -c '' 2>&1 | grep -- "$pattern"
+        ;;
+    bash)
+        PS4='+${BASH_SOURCE}:${LINENO}>' bash -i -x -c '' 2>&1 | grep -- "$pattern"
+        ;;
+    fish)
+        fish_trace=1 fish -i -c '' 2>&1 | grep -- "$pattern"
+        ;;
+    *)
+        echo "shell-trace: cannot detect caller shell (parent=$parent, SHELL=${SHELL:-})" >&2
+        exit 1
+        ;;
+esac
