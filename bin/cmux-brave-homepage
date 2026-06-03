@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+#
+# cmux-brave-homepage — open Brave Search on every blank cmux browser tab.
+#
+# cmux has no native "homepage" / "start page" setting: its embedded browser
+# opens new tabs on an internal blank page. This watcher subscribes to cmux's
+# event stream and, whenever a *blank* browser surface is created (one with no
+# destination URL), navigates it to https://search.brave.com/ and moves focus
+# off cmux's address bar into the page so Brave's own search box gets focus.
+# Tabs opened with a real URL (links, `open <url>`, restored sessions) keep it.
+#
+# Run it INSIDE cmux (e.g. in a dedicated terminal tab) and leave it running:
+#
+#     cmux-brave-homepage        # quiet
+#     cmux-brave-homepage -v     # print a timestamped line per handled tab
+#
+# cmux's socket is in `cmuxOnly` mode, which authorizes callers by process
+# lineage — only descendants of cmux.app may drive it. Running this from a
+# cmux terminal satisfies that; a launchd/LaunchAgent process is rejected
+# (Broken pipe). It survives cmux auto-updates with nothing to reapply.
+
+set -o nounset -o pipefail
+
+# Make Homebrew's cmux + jq findable regardless of how the shell was launched.
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
+readonly HOMEPAGE_URL="https://search.brave.com/"
+readonly DEBOUNCE_SECONDS=0.5   # let link/restored tabs commit their URL first
+
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") [-v|--verbose]
+
+Watch cmux for blank browser tabs and send them to $HOMEPAGE_URL,
+focusing the page so Brave's search box is ready to type in.
+
+  -v, --verbose   Print a timestamped line for each browser tab handled.
+  -h, --help      Show this help.
+EOF
+}
+
+VERBOSE=""
+case "${1:-}" in
+    -v | --verbose) VERBOSE=1 ;;
+    -h | --help) usage; exit 0 ;;
+    "") ;;
+    *) echo "cmux-brave-homepage: unknown argument '$1'" >&2; usage >&2; exit 2 ;;
+esac
+
+for tool in cmux jq; do
+    if ! command -v "$tool" >/dev/null 2>&1; then
+        echo "cmux-brave-homepage: '$tool' not found on PATH" >&2
+        exit 127
+    fi
+done
+
+log_event() {
+    [[ -n "$VERBOSE" ]] || return 0
+    printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >&2
+}
+
+echo "cmux-brave-homepage: watching for blank browser tabs -> $HOMEPAGE_URL (ctrl-c to stop)" >&2
+
+# Redirect a freshly-created browser surface to the homepage if it is still
+# blank, then hand keyboard focus to the page. Backgrounded so the event loop
+# never blocks while a tab loads.
+redirect_if_blank() {
+    local sid="$1"
+    sleep "$DEBOUNCE_SECONDS"
+
+    local url
+    url="$(cmux browser --surface "$sid" get-url 2>/dev/null)" || return 0
+    case "$url" in
+        "" | "about:blank") ;;                                  # blank → redirect
+        *) log_event "tab ${sid:0:8} already at $url — left as-is"; return 0 ;;
+    esac
+
+    cmux browser --surface "$sid" navigate "$HOMEPAGE_URL" >/dev/null 2>&1 || return 0
+
+    # Move keyboard focus off cmux's address bar into the webview so Brave's
+    # native search-box autofocus takes effect. Only works while the tab is
+    # frontmost; retry past the brief "hidden" state right after navigation.
+    cmux browser --surface "$sid" wait --load-state interactive --timeout-ms 6000 >/dev/null 2>&1
+    local i focused=""
+    for i in 1 2 3 4; do
+        if cmux browser --surface "$sid" focus-webview >/dev/null 2>&1; then focused=1; break; fi
+        sleep 0.25
+    done
+
+    if [[ -n "$focused" ]]; then
+        log_event "tab ${sid:0:8} -> $HOMEPAGE_URL (search box focused)"
+    else
+        log_event "tab ${sid:0:8} -> $HOMEPAGE_URL (not frontmost; focus left to you)"
+    fi
+}
+
+# Outer loop reconnects if the stream drops because cmux quit/restarted
+# (e.g. during an auto-update). `cmux events --reconnect` also retries on its
+# own; this is the backstop for when the CLI itself exits.
+while true; do
+    cmux events --reconnect --no-heartbeat --name surface.created 2>/dev/null \
+    | while IFS= read -r line; do
+        # Only blank-eligible browser surfaces; skips the ack frame and
+        # terminal surfaces without paying for a jq spawn.
+        [[ "$line" == *'"kind":"browser"'* ]] || continue
+        sid="$(jq -r 'select(.type=="event") | .payload.surface_id // empty' <<<"$line" 2>/dev/null)"
+        [[ -n "${sid:-}" ]] || continue
+        redirect_if_blank "$sid" &
+    done
+    sleep 3
+done

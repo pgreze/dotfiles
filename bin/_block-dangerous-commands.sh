@@ -1,5 +1,18 @@
 #!/usr/bin/env bash
+# This script is intended to be used as a pre-command hook to block dangerous commands.
+# It reads the command from standard input (as JSON), checks it against a list of patterns,
+# and exits with an error if a match is found. Otherwise, it exits with success to allow the command to proceed.
 set -euo pipefail
+
+if [ "$#" -eq 1 ] && [ "$1" == "--install" ]; then
+  hooks="$HOME/.claude/hooks"
+  mkdir -p "$hooks"
+  ln -s "$(realpath "$0")" "$hooks/block-dangerous-commands.sh"
+  settings="$HOME/.claude/settings.json"
+  tmp="$(mktemp)"
+  jq '.hooks.PreToolUse = ((.hooks.PreToolUse // []) + [{"matcher": "Bash", "hooks": [{"type": "command", "command": "~/.claude/hooks/block-dangerous-commands.sh"}]}])' "$settings" > "$tmp" && mv "$tmp" "$settings"
+  exit 0
+fi
 
 INPUT=$(cat)
 COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')

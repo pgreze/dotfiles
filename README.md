@@ -45,8 +45,13 @@ brew install --cask obsidian rectangle bartender nordvpn telegram
 brew install --cask iterm2 visual-studio-code trailer sloth
 brew install --cask android-sdk jetbrains-toolbox jd-gui visualvm # intellij-idea-ce android-studio
 brew install --cask transmission slack discord vlc firefox virtualbox android-file-transfer libreoffice skype electrum cyberduck
-brew install --cask docker docker-machine
 brew install --cask raspberry-pi-imager
+
+brew install --cask docker docker-machine
+# OR
+brew install podman podman-desktop
+brew tap slp/krunkit && brew install krunkit # for Apple silicon
+sudo ln -sf "$(which podman)" /usr/local/bin/docker
 ```
 
 https://endoflife.date/java
