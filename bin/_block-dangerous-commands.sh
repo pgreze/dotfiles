@@ -26,25 +26,32 @@ block() {
   exit 2
 }
 
+# Recoverable-but-dangerous: prompt the user to confirm instead of hard-denying.
+ask() {
+  jq -n --arg r "$1" '{hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:"ask",permissionDecisionReason:$r}}'
+  exit 0
+}
+
 # ─── Git: destructive / irreversible ─────────────────────────────────────────
 echo "$COMMAND" | grep -qiE '\bgit\s+push\s+.*--force\b' &&
+! echo "$COMMAND" | grep -qiE -- '--force-with-lease' &&
   block "BLOCKED: git push --force — use --force-with-lease instead"
 echo "$COMMAND" | grep -qiE '\bgit\s+push\s+.*-f\b' &&
   block "BLOCKED: git push -f — use --force-with-lease instead"
 echo "$COMMAND" | grep -qiE '\bgit\s+reset\s+--hard\b' &&
-  block "BLOCKED: git reset --hard — this discards uncommitted work"
+  ask "git reset --hard discards uncommitted changes (recoverable via reflog for committed work). Proceed?"
 echo "$COMMAND" | grep -qiE '\bgit\s+clean\s+.*-fd\b' &&
   block "BLOCKED: git clean -fd — permanently deletes untracked files"
 echo "$COMMAND" | grep -qiE '\bgit\s+checkout\s+--\s+\.' &&
   block "BLOCKED: git checkout -- . — discards all unstaged changes"
-echo "$COMMAND" | grep -qiE '\bgit\s+branch\s+-D\b' &&
-  block "BLOCKED: git branch -D — force-deletes branch without merge check"
+echo "$COMMAND" | grep -qE '\bgit\s+branch\s+-D\b' &&
+  ask "git branch -D force-deletes a branch without a merge check. Proceed?"
 echo "$COMMAND" | grep -qiE '\bgit\s+rebase\s+.*-i\b' &&
-  block "BLOCKED: git rebase -i — interactive rebase requires user input"
+  ask "git rebase -i is interactive — it will hang unless GIT_SEQUENCE_EDITOR is set non-interactively (e.g. GIT_SEQUENCE_EDITOR=: or a sed script). Proceed?"
 echo "$COMMAND" | grep -qiE '\bgit\s+stash\s+drop\b' &&
-  block "BLOCKED: git stash drop — permanently deletes a stash entry"
+  ask "git stash drop permanently deletes a stash entry. Proceed?"
 echo "$COMMAND" | grep -qiE '\bgit\s+stash\s+clear\b' &&
-  block "BLOCKED: git stash clear — permanently deletes all stashes"
+  ask "git stash clear permanently deletes all stashes. Proceed?"
 echo "$COMMAND" | grep -qiE '\bgit\s+reflog\s+expire\b' &&
   block "BLOCKED: git reflog expire — destroys recovery history"
 echo "$COMMAND" | grep -qiE '\bgit\s+gc\s+--prune=now\b' &&
