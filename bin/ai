@@ -2,14 +2,19 @@
 # ai — multi-CLI launcher with profile selection
 # To add a CLI: append to CLIS/CLI_LABELS, define <NAME_UPPER>_PROFILES array
 
-CLIS=("claude" "codex")
-CLI_LABELS=("Claude" "Codex")
+CLIS=("claude" "agy" "codex")
+CLI_LABELS=("Claude" "Antigravity" "Codex")
 
 # Profile format: "name|flags|description"
 CLAUDE_PROFILES=(
     "quick|--model sonnet --effort low|Fast answers, simple tasks"
     "standard|--model sonnet --effort high|Everyday development"
     "max|--model opus --effort max|Best quality, hard problems"
+)
+AGY_PROFILES=(
+    "quick|--model gemini-3.5-flash|Fast answers, simple tasks"
+    "standard|--model gemini-3.5-pro|Everyday development"
+    "max|--model gemini-3.5-pro --dangerously-skip-permissions|Best quality, hard problems"
 )
 CODEX_PROFILES=(
     "quick|--model gpt-5.4-mini|Fast answers, simple tasks"

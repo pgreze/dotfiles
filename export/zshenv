@@ -10,6 +10,9 @@
 # Add /opt/homebrew/sbin to PATH
 [ -d "/opt/homebrew/sbin" ] && export PATH="/opt/homebrew/sbin:$PATH"
 
+# Add gcloud-cli binaries to PATH
+[ -d "/opt/homebrew/share/google-cloud-sdk/bin" ] && export PATH="/opt/homebrew/share/google-cloud-sdk/bin:$PATH"
+
 # Add ~/.my/bin to PATH
 [ -d "$HOME/.my/bin" ] && export PATH="$HOME/.my/bin:$PATH"
 
