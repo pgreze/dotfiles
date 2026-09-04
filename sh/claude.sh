@@ -18,6 +18,7 @@ alias clc='claude --continue'
 alias clr='claude --resume'
 alias clu='claude update'
 alias clm='claude mcp'
+alias cla='claude agents --cwd .'
 # Git-related aliases
 alias clcommit='claude commit'
 alias clpr='claude pr'

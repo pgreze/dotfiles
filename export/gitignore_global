@@ -6,3 +6,4 @@ env.props
 /gitignore
 local.properties
 .claude/settings.local.json
+.claude/worktrees/
