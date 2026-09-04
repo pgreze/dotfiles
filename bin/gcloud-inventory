@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+# gcloud-inventory [-s sec1,sec2] [-o table|json] [PROJECT]
+set -uo pipefail
+
+ALL_SECTIONS="vms gar functions run gke sql redis buckets pubsub disks addresses lbs secrets sas"
+
+usage() {
+  echo "usage: gcloud-inventory [-s sec1,sec2] [-o table|json] [-v] [PROJECT]"
+  echo "sections: $ALL_SECTIONS"
+  exit "${1:-1}"
+}
+
+[[ ${1:-} == --help ]] && usage 0
+
+OUTPUT=table SECTIONS=$ALL_SECTIONS VERBOSE=0
+while getopts "s:o:vh" opt; do
+  case $opt in
+    s) SECTIONS=${OPTARG//,/ } ;;
+    o) OUTPUT=$OPTARG ;;
+    v) VERBOSE=1 ;;
+    h) usage 0 ;;
+    *) usage ;;
+  esac
+done
+shift $((OPTIND - 1))
+PROJECT=${1:-$(gcloud config get-value project 2>/dev/null)}
+[[ -n $PROJECT ]] || { echo "no project set" >&2; exit 1; }
+
+gcp() { gcloud --project "$PROJECT" "$@" 2>/dev/null; }
+
+list_command() {
+  case $1 in
+    vms)       echo "compute instances list" ;;
+    gar)       echo "artifacts repositories list" ;;
+    functions) echo "functions list" ;;
+    run)       echo "run services list" ;;
+    gke)       echo "container clusters list" ;;
+    sql)       echo "sql instances list" ;;
+    redis)     echo "redis instances list --region=-" ;;
+    buckets)   echo "storage buckets list" ;;
+    pubsub)    echo "pubsub topics list" ;;
+    disks)     echo "compute disks list" ;;
+    addresses) echo "compute addresses list" ;;
+    lbs)       echo "compute forwarding-rules list" ;;
+    secrets)   echo "secrets list" ;;
+    sas)       echo "iam service-accounts list" ;;
+  esac
+}
+
+table_format() {
+  case $1 in
+    vms)       echo "table(name,zone.basename(),machineType.basename(),status)" ;;
+    gar)       echo "table(name.basename(),format,name.scope(locations).segment(0):label=LOCATION)" ;;
+    functions) echo "" ;;  # gen1/gen2 have different fields; gcloud's default table handles both
+    run)       echo "table(metadata.name,metadata.labels.'cloud.googleapis.com/location',status.url)" ;;
+    sql)       echo "table(name,databaseVersion,region,state)" ;;
+    redis)     echo "table(name.basename(),tier,memorySizeGb,locationId,state)" ;;
+    buckets)   echo "table(name,location)" ;;
+    pubsub)    echo "table(name.basename())" ;;
+    disks)     echo "table(name,zone.basename(),sizeGb,users.len():label=ATTACHED)" ;;
+    addresses) echo "table(name,address,region.basename(),status)" ;;
+    lbs)       echo "table(name,IPAddress,target.basename())" ;;
+    secrets)   echo "table(name.basename(),createTime.date())" ;;
+    sas)       echo "table(email,disabled)" ;;
+  esac
+}
+
+# clusters list already embeds nodePools, so one API call covers everything
+gke_table() {
+  gcp container clusters list --format=json | jq -c '.[]' |
+  while read -r cluster_json; do
+    jq -r '"### \(.name) (\(.location), \(.status)) — master \(.currentMasterVersion), channel \(.releaseChannel.channel // "none"), \(.currentNodeCount // 0) nodes ###"' <<<"$cluster_json"
+    jq -r '
+      (["NAME","MACHINE","AUTOSCALING","SPOT","DISK","VERSION","STATUS"] | @tsv),
+      (.nodePools[] | [
+        .name,
+        .config.machineType,
+        (if .autoscaling.enabled then "\(.autoscaling.minNodeCount // .autoscaling.totalMinNodeCount // 0)-\(.autoscaling.maxNodeCount // .autoscaling.totalMaxNodeCount // "?")" else "fixed:\(.initialNodeCount // 0)" end),
+        (if (.config.spot or .config.preemptible) then "yes" else "no" end),
+        "\(.config.diskSizeGb)GB \(.config.diskType)",
+        .version,
+        .status
+      ] | @tsv)' <<<"$cluster_json" | column -t -s $'\t' | sed 's/^/  /'
+    echo
+  done
+}
+
+fetch_section() {
+  local section=$1 out_file=$2 started=$SECONDS
+  if [[ $section == gke && $OUTPUT == table ]]; then
+    gke_table > "$out_file"
+  else
+    local format
+    format=$([[ $OUTPUT == json ]] && echo json || table_format "$section")
+    # shellcheck disable=SC2046
+    gcp $(list_command "$section") ${format:+--format="$format"} > "$out_file"
+  fi
+  if (( VERBOSE )); then
+    echo "  $section done in $((SECONDS - started))s" >&2
+  else
+    echo "  $section done" >&2
+  fi
+}
+
+echo "project: $PROJECT — scanning: $SECTIONS" >&2
+
+results_dir=$(mktemp -d); trap 'rm -rf "$results_dir"' EXIT
+for section in $SECTIONS; do
+  fetch_section "$section" "$results_dir/$section" &
+done
+wait
+
+if [[ $OUTPUT == json ]]; then
+  for section in $SECTIONS; do
+    jq --arg key "$section" '{($key): (. // [])}' "$results_dir/$section" 2>/dev/null ||
+      echo "{\"$section\": []}"
+  done | jq -s add
+else
+  for section in $SECTIONS; do
+    [[ -s $results_dir/$section ]] || continue
+    echo; echo "== $section =="
+    cat "$results_dir/$section"
+  done
+fi
