@@ -49,3 +49,8 @@ case $SHELL in
   */bash) [ -f ~/.fzf.bash ] && source ~/.fzf.bash || echo "TODO: brew install fzf" ;;
   *)      echo "Unsupported shell, cannot load fzf."
 esac
+
+# https://worktrunk.dev/ CLI for Git worktree management
+if command -v wt >/dev/null 2>&1; then
+    eval "$(command wt config shell init zsh)"
+fi

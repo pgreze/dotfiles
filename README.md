@@ -35,6 +35,8 @@ brew install pyenv && pyenv install 2.7.18
 # TODO: kibi fdfind ytop licensor LINE
 # brew install mas        # https://github.com/mas-cli/mas 📦 Mac App Store command line interface
 brew install robotsandpencils/made/xcodes # Allowing to install/manage several XCode versions.
+
+brew install worktrunk # https://worktrunk.dev/
 ```
 
 Homebrew cask:
