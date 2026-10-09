@@ -22,3 +22,6 @@ typeset -U path PATH
 
 # Load this machine only environment
 [ -f "$HOME/.my/local/zshenv" ] && source "$HOME/.my/local/zshenv"
+
+# Claude Code shells only: stop zsh expanding a bare "===" separator as =command lookup.
+[[ -n "$CLAUDECODE" ]] && setopt NO_EQUALS
