@@ -2,4 +2,4 @@
 ### GCP related configuration
 ###
 
-alias glogin="gcloud auth login --update-adc"
+# See bin/gcloud-login for native+ADC lock safe authentication

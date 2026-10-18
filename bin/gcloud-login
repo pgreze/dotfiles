@@ -1,0 +1,29 @@
+#!/usr/bin/env zsh
+# Single-flight gcloud login refreshing both CLI credentials and ADC.
+# Concurrent callers wait for the login in progress, then exit without opening another tab.
+# zsh, not sh: ~/.zshenv provides PATH when launched from a GUI app.
+lock="$HOME/.config/gcloud/gcloud-login.lock"
+
+if [ -z "${GCLOUD_LOGIN_LOCKED:-}" ]; then
+  export GCLOUD_LOGIN_LOCKED=1
+  # lockf exits 75 (EX_TEMPFAIL) when -t 0 cannot take the lock.
+  lockf -s -t 0 "$lock" "$0" "$@"; rc=$?
+  [ "$rc" -eq 75 ] || exit "$rc"
+  echo "Another gcloud login is in progress; waiting for it to finish."
+  export GCLOUD_LOGIN_WAITED=1
+  exec lockf -s "$lock" "$0" "$@"
+fi
+
+# A waiter logs in itself only if the login it waited for failed.
+if [ -n "${GCLOUD_LOGIN_WAITED:-}" ] &&
+   gcloud auth print-access-token >/dev/null 2>&1 &&
+   gcloud auth application-default print-access-token >/dev/null 2>&1; then
+  echo "The other gcloud login finished; credentials are fresh."
+  exit 0
+fi
+
+# BROWSER=open: gcloud's own launch silently fails in some background shells; macOS open does not.
+# 5min cap: an abandoned browser flow leaves gcloud waiting on its callback port, holding the lock.
+BROWSER=open timeout --kill-after=10s 5m gcloud auth login --update-adc --launch-browser "$@"; rc=$?
+[ "$rc" -ne 124 ] || echo "gcloud login timed out after 5 min." >&2
+exit "$rc"
