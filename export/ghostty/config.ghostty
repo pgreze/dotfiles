@@ -1,0 +1,24 @@
+theme = Catppuccin Macchiato
+# theme = Catppuccin Mocha
+
+# Font
+font-family = "JetBrainsMono Nerd Font"
+font-size = 14
+
+# System
+window-decoration = true
+background-blur-radius = 20
+window-padding-x = 10
+window-padding-y = 10
+mouse-hide-while-typing = true
+
+# OSX
+macos-option-as-alt = true
+macos-titlebar-style = hidden
+
+# Shell Integration
+shell-integration = zsh
+#command = /bin/zsh -l
+
+# Keybindings
+keybind = super+shift+r=reload_config

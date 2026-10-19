@@ -1,0 +1,14 @@
+onboarding = false
+
+[ui.sound]
+enabled = false
+
+[ui]
+status_indicators = "symbols"
+
+[ui.toast]
+delivery = "terminal"
+
+[theme]
+name = "terminal"
+auto_switch = false

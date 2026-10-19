@@ -20,23 +20,8 @@ fi
 
 ln -s "$THIS_FOLDER" "$DOTFILES"
 
-# Link all ./exports/* as ~/.*
-echo ">> Export dotfiles from $PWD"
-prefix=$(date +%s)
-pushd ~/.my
-for i in export/*;do
-    abspath="$PWD/$i"
-    target="$HOME/.${i##*/}"
-
-    if [ -e "$target" ] || [ -L "$target" ];then
-        backup=/tmp/"$prefix-${i##*/}"
-        echo "Moving $target to $backup"
-        mv "$target" "$backup"
-    fi
-
-    echo "$abspath -> $target"
-    ln -s "$abspath" "$target"
-done
-popd
+# Link all ./export/* as ~/.*
+echo ">> Export dotfiles from $THIS_FOLDER"
+EXPORT_VERBOSE=1 . "$DOTFILES/sh/export.sh"
 
 echo ">> dotfiles installed :D"
