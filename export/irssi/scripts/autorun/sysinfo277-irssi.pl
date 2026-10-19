@@ -1,1 +1,0 @@
-../sysinfo277-irssi.pl

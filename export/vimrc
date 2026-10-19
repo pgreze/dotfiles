@@ -152,10 +152,3 @@ if has("gui_running")
 else
     set bg=dark
 endif
-
-" template for new python file
-autocmd BufNewFile *.py,*.pyw 0read ~/.vim/templates/python.txt
-
-" add pythogen extension
-call pathogen#infect() 
-

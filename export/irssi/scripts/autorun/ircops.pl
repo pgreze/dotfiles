@@ -1,1 +1,0 @@
-../ircops.pl
