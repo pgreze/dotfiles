@@ -54,6 +54,14 @@ function osx_init {
         PATH="$OPT_PATH/grep/libexec/gnubin:$PATH"
     fi
 
+    # Ghostty only adds its CLI to PATH in shells it starts (shell-integration-features = path).
+    for apps in /Applications "$HOME/Applications"; do
+        if [ -x "$apps/Ghostty.app/Contents/MacOS/ghostty" ]; then
+            PATH="$PATH:$apps/Ghostty.app/Contents/MacOS"
+            break
+        fi
+    done
+
     # Fix encoding annoyances with less. See configuration with "locale" command.
     export LC_ALL=en_US.UTF-8
     export LANG=en_US.UTF-8
