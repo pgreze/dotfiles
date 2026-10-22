@@ -5,6 +5,7 @@ enabled = false
 
 [ui]
 status_indicators = "symbols"
+prompt_new_workspace_name = true
 
 [ui.toast]
 delivery = "terminal"
@@ -42,3 +43,12 @@ zoom             = ["prefix+z", "cmd+shift+enter"]
 previous_agent = "cmd+ctrl+up"
 next_agent     = "cmd+ctrl+down"
 focus_agent    = "cmd+ctrl+alt+1..9"
+goto           = ["prefix+g", "cmd+p"]
+
+[[keys.command]]
+key = "cmd+shift+t"
+type = "popup"
+command = "~/.my/bin/herdr-claude-tab"
+description = "new Claude session tab"
+width = 70
+height = 8

@@ -29,6 +29,7 @@ shell-integration = zsh
 # See https://suraj.io/post/2026/ghostty-as-a-shell-for-herdr/
 # Herdr enables the Kitty keyboard protocol, so it sees Cmd once Ghostty releases a chord.
 keybind = cmd+t=unbind
+keybind = cmd+shift+t=unbind
 keybind = cmd+w=unbind
 keybind = cmd+n=unbind
 keybind = cmd+shift+w=unbind

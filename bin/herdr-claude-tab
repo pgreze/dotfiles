@@ -1,0 +1,15 @@
+#!/bin/zsh -l
+# Herdr popup: start a named Claude session in a new tab of the active workspace.
+# Login shell because the herdr server only has the launchd PATH.
+set -eu
+
+herdr=${HERDR_BIN_PATH:-herdr}
+name='' dir=${HERDR_ACTIVE_PANE_CWD:-$HOME}
+vared -p 'Session name: ' name
+[[ -n $name ]] || exit 0
+vared -p 'Directory: ' dir
+
+pane=$($herdr tab create --workspace "$HERDR_ACTIVE_WORKSPACE_ID" --cwd "${~dir}" --label "$name" --focus |
+  jq -r .result.root_pane.pane_id)
+$herdr pane send-text "$pane" "claude -n ${(q)name}"
+$herdr pane send-keys "$pane" enter
