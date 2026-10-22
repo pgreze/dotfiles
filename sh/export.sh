@@ -55,6 +55,7 @@
         case "$name" in
             ghostty) recursive_symlink "$item" "$HOME/.config/$name" ;;
             herdr)   recursive_symlink "$item" "$HOME/.config/$name" ;;
+            helix)   recursive_symlink "$item" "$HOME/.config/$name" ;;
             *)       echo >&2 "ERROR: export/$name is missing a config" ;;
         esac
     done
