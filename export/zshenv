@@ -1,3 +1,6 @@
+# Panes opened by scripts like bin/hmd run DOT_EXEC instead of a slow interactive shell.
+if [[ -n ${DOT_EXEC:-} ]]; then cmd=$DOT_EXEC; unset DOT_EXEC; eval "exec $cmd"; fi
+
 # Keep PATH deduplicated: .zshenv runs for every zsh invocation, so nested
 # shells would otherwise stack another copy of each entry below.
 typeset -U path PATH
