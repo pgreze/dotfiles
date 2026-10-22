@@ -53,6 +53,7 @@
         [ -d "$item" ] || continue
 
         case "$name" in
+            edamame) recursive_symlink "$item/themes" "$HOME/.config/$name/themes" ;;
             ghostty) recursive_symlink "$item" "$HOME/.config/$name" ;;
             herdr)   recursive_symlink "$item" "$HOME/.config/$name" ;;
             helix)   recursive_symlink "$item" "$HOME/.config/$name" ;;

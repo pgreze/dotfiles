@@ -1,0 +1,33 @@
+# leaf's default OceanDark colors, from RivoLink/leaf src/theme/presets.rs.
+
+[palette]
+text             = "#d0d2da"
+text_muted       = "#5f6e91"
+bg               = "#12141c"
+bg_muted         = "#181c2c"
+surface          = "#283044"
+surface_elevated = "#121420"
+
+primary   = "#8cbeff"
+secondary = "#78d2aa"
+accent    = "#5fc894"
+link      = "#5898ee"
+
+success = "#5fc894"
+warning = "#d2b478"
+error   = "#da5f5f"
+code    = "#dc9676"
+
+diff_add    = "#8cdcaa"
+diff_delete = "#e48080"
+
+[h3]
+fg = "#d2b478"
+bold = true
+
+[h4]
+fg = "#a2c0de"
+bold = true
+
+[blockquote_text]
+fg = "#9494c3"
