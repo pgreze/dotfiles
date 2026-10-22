@@ -1,0 +1,120 @@
+#!/bin/zsh
+# Interactive herdr tutorial, like `hx --tutor`: each lesson asks for an action
+# with the keys from export/herdr/config.toml, then waits until herdr's live state shows it.
+set -u
+
+[[ ${HERDR_ENV:-} == 1 ]] || { print "Run me inside a herdr pane."; exit 1; }
+herdr=${HERDR_BIN_PATH:-herdr}
+me=$HERDR_PANE_ID
+prefix=$(sed -n 's/^prefix = "\(.*\)"/\1/p' ${HERDR_CONFIG_PATH:-~/.config/herdr/config.toml})
+
+snapshot() { $herdr api snapshot | jq '.result.snapshot'; }
+check() { snapshot | jq -e --arg me $me "$1" >/dev/null; }
+
+# Name our own tab so `cmd+p` can find the way back, and restore it on exit.
+tab=$(snapshot | jq -r --arg me $me '.panes[] | select(.pane_id == $me) | .tab_id')
+old_label=$(snapshot | jq -r --arg t $tab '.tabs[] | select(.tab_id == $t) | .label')
+$herdr tab rename $tab "herdr tutor" >/dev/null
+trap '$herdr tab rename $tab "$old_label" >/dev/null; exit' EXIT INT TERM
+
+# Wait for `goal` (a jq test on the snapshot), then for the person to come back to this pane.
+# `s` skips the lesson and `q` quits.
+lesson() {
+  local title=$1 body=$2 goal=$3 back=$4 key
+  clear
+  print -P "%B%F{cyan}$title%f%b\n"
+  print -P "$body"
+  print -P "\n%F{8}Waiting for you... (s: skip, q: quit)%f"
+  until check "$goal"; do
+    read -s -t 0.5 -k 1 key && case $key in s) return ;; q) exit ;; esac
+  done
+  if ! check '.focused_pane_id == $me'; then
+    $herdr notification show "✓ $title" --body "Come back to the tutor: $back" >/dev/null
+    print -P "%F{green}✓ Done.%f Come back here: %B$back%b"
+    until check '.focused_pane_id == $me'; do
+      read -s -t 0.5 -k 1 key && case $key in s) return ;; q) exit ;; esac
+    done
+  fi
+  print -P "%F{green}✓ Well done.%f Press any key for the next lesson."
+  read -s -k 1
+}
+
+tutor_ws='.workspaces[] | select(.label == "tutor")'
+back_ws="%Bcmd+shift+up%b/%Bdown%b to the tutor's workspace"
+back_goto="%Bcmd+p%b, %B/%b, type %Bherdr tutor%b, %BEnter%b"
+
+clear
+print -P "%B%F{cyan}Herdr tutor%f%b
+
+Herdr is your Claude session handler:
+  • a %Bworkspace%b is a %Btheme%b (ci, infra, personal...), listed in the left sidebar,
+  • a %Btab%b is a %Bsession%b, labelled with the Claude session name,
+  • the sidebar's agent list shows every Claude and its state, across themes.
+
+Each lesson asks you to do something; this pane notices when it's done.
+You leave this pane on purpose: a notification tells you when to come back.
+Your prefix key is %B$prefix%b; %B$prefix ?%b shows every binding.
+
+Press any key to start."
+read -s -k 1
+
+lesson "1. A theme is a workspace" \
+  "Press %Bcmd+n%b, type %Btutor%b, press %BEnter%b.
+Herdr moves you to the new workspace: themes are separate places." \
+  "[$tutor_ws] | length > 0" "$back_ws"
+
+lesson "2. A session is a tab" \
+  "Go to the %Btutor%b workspace (%Bcmd+shift+down%b), then press %Bcmd+shift+t%b.
+Name the session %Btutor hello%b, press %BEnter%b, and %BEnter%b again to keep the directory.
+A tab labelled %Btutor hello%b opens with %Bclaude -n \"tutor hello\"%b running." \
+  "[$tutor_ws | .workspace_id] as \$w | [.tabs[] | select(.label == \"tutor hello\" and (.workspace_id | IN(\$w[])))] | length > 0" \
+  "$back_ws"
+
+lesson "3. Tabs follow the session name" \
+  "In the %Btutor hello%b tab, type %B/rename tutor renamed%b and press %BEnter%b.
+Then send any prompt, like %Bsay hi%b.
+After each Claude turn, a hook copies the session name onto its tab." \
+  '[.tabs[] | select(.label == "tutor renamed")] | length > 0' "$back_ws"
+
+lesson "4. Jump anywhere by name" \
+  "Press %Bcmd+p%b to open the session navigator: every agent and terminal, grouped by theme.
+Press %B/%b, type %Brenamed%b, press %BEnter%b.
+This is the fastest way around: you never need to remember where a session lives." \
+  '.focused_tab_id as $t | [.tabs[] | select(.tab_id == $t and .label == "tutor renamed")] | length > 0' \
+  "$back_goto"
+
+lesson "5. Hop between agents" \
+  "Press %Bcmd+ctrl+down%b and %Bcmd+ctrl+up%b to step through agents in sidebar order, across themes.
+%Bcmd+ctrl+alt+1..9%b jumps straight to agent N.
+Use it to sweep through sessions waiting for you. Land on any agent." \
+  '.focused_pane_id as $p | [.agents[] | select(.pane_id == $p)] | length > 0' "$back_goto"
+
+lesson "6. Plain tabs inside a theme" \
+  "Go to the %Btutor%b workspace, press %Bcmd+t%b and name the tab %Bscratch%b.
+Then come back to the session tab with %Bcmd+left%b (%Bcmd+right%b goes forward, %Bcmd+1..9%b by number).
+Shell tabs sit beside the theme's sessions for builds, logs or git." \
+  "([.tabs[] | select(.label == \"scratch\")] | length > 0) and (.focused_tab_id as \$t | [.tabs[] | select(.tab_id == \$t and .label == \"tutor renamed\")] | length > 0)" \
+  "$back_ws"
+
+lesson "7. Split, move, zoom" \
+  "Go to the %Bscratch%b tab. Split it with %Bcmd+backslash%b (side by side) and %Bcmd+minus%b (stacked).
+Move between panes with %Bcmd+alt+arrows%b; %Bcmd+shift+enter%b zooms one pane.
+Split tabs keep the label you gave them." \
+  '[.tabs[] | select(.label == "scratch" and .pane_count >= 3)] | length > 0' "$back_ws"
+
+lesson "8. Clean up" \
+  "%Bcmd+w%b closes the focused tab, %Bcmd+shift+w%b closes the whole workspace.
+Close the %Btutor%b workspace. Its Claude session stays resumable with %Bclaude --resume%b." \
+  "[$tutor_ws] | length == 0" "$back_goto"
+
+clear
+print -P "%B%F{cyan}Cheat sheet%f%b
+
+  %BThemes%b    cmd+n new · cmd+shift+up/down · cmd+ctrl+1..9 · $prefix shift+w rename
+  %BSessions%b  cmd+shift+t new Claude tab · cmd+left/right · cmd+1..9 · $prefix shift+t rename
+  %BJump%b      cmd+p navigator (/ search, b/w/i/d filter) · cmd+ctrl+up/down next agent
+  %BPanes%b     cmd+backslash · cmd+minus · cmd+alt+arrows · cmd+shift+enter zoom
+  %BClose%b     cmd+w tab · cmd+shift+w workspace
+  %BMore%b      $prefix ? all keys · $prefix b toggle sidebar · herdr-tutor to replay
+
+You're done. Have fun herding."
