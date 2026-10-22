@@ -1,0 +1,32 @@
+#!/usr/bin/env zsh
+# Starts a Claude PR review as a background session listed in `claude agents`.
+# The PR comes from the clipboard when it holds only a PR URL, else the front Chrome tab, else a prompt.
+# zsh, not sh: ~/.zshenv provides PATH when launched from a GUI app.
+set -eu
+
+pr_re='^https://github\.com/([^/[:space:]]+)/([^/[:space:]]+)/pull/([0-9]+)'
+
+url=$(pbpaste)
+if [[ ! $url =~ "$pr_re([/?#][^[:space:]]*)?$" ]]; then
+  # The guard keeps osascript from launching Chrome when it is closed.
+  url=$(osascript -e 'if application "Google Chrome" is running then tell application "Google Chrome" to get URL of active tab of front window' 2>/dev/null || true)
+fi
+if [[ ! $url =~ $pr_re ]]; then
+  url=$(osascript -e 'text returned of (display dialog "No PR link in the clipboard or the Chrome tab. PR URL:" default answer "" with title "Review PR")' 2>/dev/null) || exit 0
+fi
+[[ $url =~ $pr_re ]] || { print -u2 "Not a GitHub PR URL: $url"; exit 1; }
+url=$MATCH owner=$match[1] repo=$match[2] number=$match[3]
+
+mode=$(osascript -e 'on run argv' \
+  -e 'choose from list {"Interactive review", "Draft review", "Quick review"} with title "Review PR" with prompt ("Review " & item 1 of argv & "?") default items {"Interactive review"} OK button name "Start"' \
+  -e 'end run' "$owner/$repo#$number")
+[[ $mode == false ]] && exit 0
+
+# Background sessions refuse the untrusted home folder, so the fallback is a trusted project.
+dir=$HOME/git/$owner/$repo
+[[ -d $dir ]] || dir=$HOME/.my
+cd "$dir"
+claude --bg -n "review $repo#$number" "${(L)mode} $url" >/dev/null
+
+osascript -e 'on run argv' -e 'display notification (item 1 of argv) with title "Review PR started"' -e 'end run' \
+  "$mode of $owner/$repo#$number in ${dir/#$HOME/~}"
