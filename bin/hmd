@@ -1,0 +1,12 @@
+#!/bin/zsh
+# Edit a Markdown file in Helix, with a live mdfried preview in a herdr pane on the right.
+set -eu
+
+[[ -n ${HERDR_PANE_ID:-} ]] || exec hx "$@"
+
+file=${1:?usage: hmd <file.md>}
+[[ -e $file ]] || : > "$file"
+pane=$(herdr pane split --current --direction right --no-focus | jq -r .result.pane.pane_id)
+trap 'herdr pane close "$pane" >/dev/null' EXIT
+herdr pane run "$pane" "mdfried --watch ${(q)file:A}" >/dev/null
+hx "$file"
