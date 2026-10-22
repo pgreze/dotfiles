@@ -2,7 +2,7 @@
 ### General environment configuration.
 ###
 
-command -v code > /dev/null && export EDITOR=code || export EDITOR=vim
+command -v hx > /dev/null && export EDITOR=hx || export EDITOR=vim
 
 command -v bat > /dev/null && export PAGER=bat
 
