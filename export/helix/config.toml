@@ -1,1 +1,13 @@
 theme = "catppuccin_mocha"
+
+[editor]
+line-number = "relative"
+cursorline = true
+bufferline = "multiple"
+end-of-line-diagnostics = "hint"
+
+[editor.cursor-shape]
+insert = "bar"
+
+[editor.inline-diagnostics]
+cursor-line = "warning"
