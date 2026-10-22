@@ -18,7 +18,7 @@ auto_switch = false
 # Ghostty must release these chords: see export/ghostty/config.ghostty.
 # See https://suraj.io/post/2026/ghostty-as-a-shell-for-herdr/
 [keys]
-prefix = "ctrl+s"
+prefix = "ctrl+g"
 new_tab   = ["prefix+c", "cmd+t"]
 close_tab = ["prefix+shift+x", "cmd+w"]
 previous_tab = ["prefix+p", "cmd+shift+[", "cmd+left"]
