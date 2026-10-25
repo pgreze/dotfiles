@@ -2,7 +2,6 @@
 
 Yet Another Dotfiles project.
 
-
 ## Installation
 
 ```bash
@@ -10,7 +9,6 @@ mkdir -p ~/git/pgreze
 git clone --recursive git@github.com:pgreze/dotfiles.git ~/git/pgreze/dotfiles
 ~/git/pgreze/dotfiles/install.sh
 ```
-
 
 ### OSX 🍏
 
@@ -48,7 +46,11 @@ brew install --cask iterm2 visual-studio-code trailer sloth
 brew install --cask android-sdk jetbrains-toolbox jd-gui visualvm # intellij-idea-ce android-studio
 brew install --cask transmission slack discord vlc firefox virtualbox android-file-transfer libreoffice skype electrum cyberduck
 brew install --cask raspberry-pi-imager
+
 brew install --cask raycast # spotlight alternative https://www.raycast.com/
+# OR
+brew trust --tap abue-ammar/tinycast && brew tap abue-ammar/tinycast
+brew install --cask tinycast # spotlight alternative https://github.com/abue-ammar/tinycast
 
 brew install --cask docker docker-machine
 # OR
