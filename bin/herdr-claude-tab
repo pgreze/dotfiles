@@ -2,16 +2,22 @@
 # Herdr popup: start Claude on a prompt in a new tab of the active workspace.
 # Login shell because the herdr server only has the launchd PATH.
 set -eu
+setopt extendedglob
 
 herdr=${HERDR_BIN_PATH:-herdr}
-prompt='' name='' dir=${HERDR_ACTIVE_PANE_CWD:-$HOME}
+prompt='' name=''
 vared -p 'Prompt: ' prompt
 [[ -n $prompt ]] || exit 0
 vared -p 'Name (optional): ' name
-vared -p 'Directory: ' dir
+
+# Enter with no match, or alt-enter, keeps the typed path, for a project not cloned under ~/git.
+dir=$(print -rl -- ${HERDR_ACTIVE_PANE_CWD:-$HOME} ~/.my ~/Obsidian ~/git/^worktrees/*(N/) |
+  awk '!seen[$0]++' | sed "s|^$HOME|~|" |
+  fzf --reverse --prompt 'Directory: ' --bind enter:accept-or-print-query,alt-enter:print-query \
+  --header "alt-enter: use typed path") || exit 0
 
 # The Stop hook replaces this placeholder label with Claude's session title.
-pane=$($herdr tab create --workspace "$HERDR_ACTIVE_WORKSPACE_ID" --cwd "${~dir}" --label "${name:-${prompt[1,30]}}" --focus |
+pane=$($herdr tab create --workspace "$HERDR_ACTIVE_WORKSPACE_ID" --cwd "${dir/#\~/$HOME}" --label "${name:-${prompt[1,30]}}" --focus |
   jq -r .result.root_pane.pane_id)
 $herdr pane send-text "$pane" "claude ${name:+-n ${(q)name} }${(q)prompt}"
 $herdr pane send-keys "$pane" enter

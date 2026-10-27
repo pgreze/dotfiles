@@ -51,4 +51,4 @@ type = "popup"
 command = "~/.my/bin/herdr-claude-tab"
 description = "new Claude session tab"
 width = 70
-height = 8
+height = 20
