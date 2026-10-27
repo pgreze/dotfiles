@@ -52,3 +52,11 @@ command = "~/.my/bin/herdr-claude-tab"
 description = "new Claude session tab"
 width = 70
 height = 20
+
+[[keys.command]]
+key = "cmd+shift+a"
+type = "popup"
+command = "~/.my/bin/herdr-claude-agents"
+description = "focus or attach a Claude agents session"
+width = 100
+height = 20

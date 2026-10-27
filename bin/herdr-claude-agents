@@ -1,0 +1,42 @@
+#!/bin/zsh -l
+# Herdr popup: pick a `claude agents` session, focus its pane or attach it in a new tab.
+# Lists the active pane's project like `claude agents --cwd .`; ctrl-a lists every project.
+# Login shell because the herdr server only has the launchd PATH.
+set -eu
+
+if [[ ${1-} == --list ]]; then
+  claude agents --json ${2:+--cwd} ${2-} |
+    jq -r --arg home $HOME '.[] | [.sessionId, .id // "", .kind, .cwd, .name, (.state // .status // ""), (.cwd | sub("^" + $home; "~"))] | @tsv'
+  exit
+fi
+
+herdr=${HERDR_BIN_PATH:-herdr}
+cwd=${HERDR_ACTIVE_PANE_CWD:-$PWD}
+
+line=$($0 --list $cwd |
+  fzf --reverse --delimiter '\t' --with-nth 5,6,7 --prompt "${cwd/#$HOME/~}: " \
+  --header 'ctrl-a: all projects' --bind "ctrl-a:reload($0 --list)+change-prompt(All: )") || exit 0
+IFS=$'\t' read -r sid id kind dir name _ <<< $line
+
+# Attach panes carry no session id, but Claude titles them with the session name.
+pane=$($herdr agent list | jq -r --arg s $sid --arg n $name \
+  'first(.result.agents[] | select(.agent_session.value == $s or .terminal_title_stripped == $n) | .pane_id) // empty')
+if [[ -n $pane ]]; then
+  $herdr agent focus $pane >/dev/null
+  exit
+fi
+
+if [[ $kind != background ]]; then
+  print "$name runs outside herdr and can't be attached."
+  read -sk1
+  exit 1
+fi
+
+# ponytail: same exact-directory workspace match as herdr-claude-tab.
+ws=$($herdr agent list |
+  jq -r --arg d $dir 'first(.result.agents[] | select(.foreground_cwd == $d) | .workspace_id) // empty')
+
+pane=$($herdr tab create --workspace "${ws:-$HERDR_ACTIVE_WORKSPACE_ID}" --cwd $dir --label $name --focus |
+  jq -r .result.root_pane.pane_id)
+$herdr pane send-text $pane "claude attach $id"
+$herdr pane send-keys $pane enter
