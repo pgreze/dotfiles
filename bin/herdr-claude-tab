@@ -16,8 +16,14 @@ dir=$(print -rl -- ${HERDR_ACTIVE_PANE_CWD:-$HOME} ~/.my ~/Obsidian ~/git/^workt
   fzf --reverse --prompt 'Directory: ' --bind enter:accept-or-print-query,alt-enter:print-query \
   --header "alt-enter: use typed path") || exit 0
 
+dir=${dir/#\~/$HOME}
+
+# ponytail: exact directory match, so sessions in a repo's subdirectory or worktree don't count.
+ws=$($herdr agent list |
+  jq -r --arg d "$dir" 'first(.result.agents[] | select(.foreground_cwd == $d) | .workspace_id) // empty')
+
 # The Stop hook replaces this placeholder label with Claude's session title.
-pane=$($herdr tab create --workspace "$HERDR_ACTIVE_WORKSPACE_ID" --cwd "${dir/#\~/$HOME}" --label "${name:-${prompt[1,30]}}" --focus |
+pane=$($herdr tab create --workspace "${ws:-$HERDR_ACTIVE_WORKSPACE_ID}" --cwd "$dir" --label "${name:-${prompt[1,30]}}" --focus |
   jq -r .result.root_pane.pane_id)
 $herdr pane send-text "$pane" "claude ${name:+-n ${(q)name} }${(q)prompt}"
 $herdr pane send-keys "$pane" enter
