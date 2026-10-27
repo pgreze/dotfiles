@@ -4,23 +4,37 @@
 # Login shell because the herdr server only has the launchd PATH.
 set -eu
 
+cwd=${HERDR_ACTIVE_PANE_CWD:-$PWD}
+
+# fzf exports its prompt to reload commands, so the list stays in the mode ctrl-a picked.
 if [[ ${1-} == --list ]]; then
-  claude agents --json ${2:+--cwd} ${2-} |
+  filter=(--cwd $cwd)
+  [[ ${FZF_PROMPT-} != All:* ]] || filter=()
+  claude agents --json $filter |
     jq -r --arg home $HOME '.[] | [.sessionId, .id // "", .kind, .cwd, .name, (.state // .status // ""), (.cwd | sub("^" + $home; "~"))] | @tsv'
   exit
 fi
 
 herdr=${HERDR_BIN_PATH:-herdr}
-cwd=${HERDR_ACTIVE_PANE_CWD:-$PWD}
 
-line=$($0 --list $cwd |
+# ctrl-x matches `claude agents`: a stopped session leaves the list, and its attach tab closes.
+line=$($0 --list |
   fzf --reverse --delimiter '\t' --with-nth 5,6,7 --prompt "${cwd/#$HOME/~}: " \
-  --header 'ctrl-a: all projects' --bind "ctrl-a:reload($0 --list)+change-prompt(All: )") || exit 0
+  --header 'ctrl-a: all projects · ctrl-x: stop session' \
+  --bind "ctrl-a:change-prompt(All: )+reload($0 --list)" \
+  --bind "ctrl-x:execute-silent(claude stop {2})+reload($0 --list)") || exit 0
 IFS=$'\t' read -r sid id kind dir name _ <<< $line
 
-# Attach panes carry no session id, but Claude titles them with the session name.
-pane=$($herdr agent list | jq -r --arg s $sid --arg n $name \
-  'first(.result.agents[] | select(.agent_session.value == $s or .terminal_title_stripped == $n) | .pane_id) // empty')
+# Attach panes carry no session id: agent view panes take the attached session's name as title,
+# and the panes this popup opens are found by their command line.
+agents=$($herdr agent list)
+pane=$(jq -r --arg s $sid --arg n $name \
+  'first(.result.agents[] | select(.agent_session.value == $s or .terminal_title_stripped == $n) | .pane_id) // empty' <<< $agents)
+for p in $(jq -r '.result.agents[] | select(.agent_session == null) | .pane_id' <<< $agents); do
+  [[ -z $pane && -n $id ]] || break
+  $herdr pane process-info --pane $p |
+    jq -e --arg c "claude attach $id" 'any(.result.process_info.foreground_processes[]; .cmdline == $c)' >/dev/null && pane=$p
+done
 if [[ -n $pane ]]; then
   $herdr agent focus $pane >/dev/null
   exit
@@ -38,5 +52,6 @@ ws=$($herdr agent list |
 
 pane=$($herdr tab create --workspace "${ws:-$HERDR_ACTIVE_WORKSPACE_ID}" --cwd $dir --label $name --focus |
   jq -r .result.root_pane.pane_id)
-$herdr pane send-text $pane "claude attach $id"
+# exec so the tab closes once the session stops, from this popup or from `claude agents`.
+$herdr pane send-text $pane "exec claude attach $id"
 $herdr pane send-keys $pane enter
