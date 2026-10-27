@@ -65,8 +65,8 @@ Herdr moves you to the new workspace: themes are separate places." \
 
 lesson "2. A session is a tab" \
   "Go to the %Btutor%b workspace (%Bcmd+shift+down%b), then press %Bcmd+shift+t%b.
-Name the session %Btutor hello%b, press %BEnter%b, and %BEnter%b again to keep the directory.
-A tab labelled %Btutor hello%b opens with %Bclaude -n \"tutor hello\"%b running." \
+Type the prompt %Bsay hi%b, name the session %Btutor hello%b, and press %BEnter%b to keep the directory.
+A tab labelled %Btutor hello%b opens with Claude already working on your prompt." \
   "[$tutor_ws | .workspace_id] as \$w | [.tabs[] | select(.label == \"tutor hello\" and (.workspace_id | IN(\$w[])))] | length > 0" \
   "$back_ws"
 
