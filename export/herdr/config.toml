@@ -20,7 +20,7 @@ auto_switch = false
 [keys]
 prefix = "ctrl+g"
 new_tab   = ["prefix+c", "cmd+t"]
-close_tab = ["prefix+shift+x", "cmd+w"]
+close_tab = "prefix+shift+x"
 previous_tab = ["prefix+p", "cmd+shift+[", "cmd+left"]
 next_tab     = ["prefix+n", "cmd+shift+]", "cmd+right"]
 switch_tab   = ["prefix+1..9", "cmd+1..9"]
@@ -62,10 +62,10 @@ width = 100
 height = 20
 
 [[keys.command]]
-key = "cmd+ctrl+x"
+key = "cmd+w"
 type = "shell"
 command = "~/.my/bin/herdr-claude-agents --stop-focused"
-description = "stop the tab's Claude session and close the tab"
+description = "close the tab, stopping its Claude session"
 
 [[keys.command]]
 key = "cmd+ctrl+t"

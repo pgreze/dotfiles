@@ -1,7 +1,7 @@
 #!/bin/zsh -l
 # Herdr popup: pick a `claude agents` session, focus its pane or attach it in a new tab.
 # Lists the active pane's project like `claude agents --cwd .`; ctrl-a lists every project.
-# --stop-focused is the cmd+ctrl+x key command: stop the active tab's session and close the tab.
+# --stop-focused is the cmd+w key command: close the active tab, stopping its session if it has one.
 # Login shell because the herdr server only has the launchd PATH.
 set -eu
 
