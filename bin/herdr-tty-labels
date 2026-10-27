@@ -1,0 +1,11 @@
+#!/bin/zsh
+# herdr-instance daemon: relabel tabs that keep herdr's default number label, "4" becoming "tty4".
+# Claude tabs get their session name from Claude's hooks, so only plain terminals keep a number.
+set -u
+
+herdr=(herdr --session ${HERDR_SESSION:-default})
+while sleep 1; do
+  $herdr tab list 2>/dev/null |
+    jq -r '.result.tabs[] | select(.label | test("^[0-9]+$")) | "\(.tab_id) \(.label)"' |
+    while read -r tab n; do $herdr tab rename $tab tty$n >/dev/null; done
+done
