@@ -1,8 +1,8 @@
-#!/bin/zsh -l
+#!/bin/zsh
 # Herdr popup: pick a `claude agents` session, focus its pane or attach it in a new tab.
 # Lists the active pane's project like `claude agents --cwd .`; ctrl-a lists every project.
 # --stop-focused is the cmd+w key command: close the active tab, stopping its session if it has one.
-# Login shell because the herdr server only has the launchd PATH.
+# No login shell: ~/.zshenv already sets the PATH the herdr server lacks, and -l costs ~30ms.
 set -eu
 
 herdr=${HERDR_BIN_PATH:-herdr}
@@ -26,10 +26,11 @@ find_pane() {
 }
 
 # Closes the tab before stopping, so an agent view tab doesn't fall back to its session list.
+# `claude stop` takes ~300ms, so it runs after the tab is gone.
 stop() {
   local tab=$1 id=$2
   [[ -z $tab ]] || $herdr tab close $tab >/dev/null
-  [[ -z $id ]] || claude stop $id >/dev/null
+  [[ -z $id ]] || claude stop $id >/dev/null 2>&1 &!
 }
 
 case ${1-} in
@@ -38,29 +39,36 @@ case ${1-} in
     filter=(--cwd $cwd)
     [[ ${FZF_PROMPT-} != All:* ]] || filter=()
     claude agents --json $filter |
-      jq -r --arg home $HOME '.[] | [.sessionId, .id // "", .kind, .cwd, .name, (.state // .status // ""), (.cwd | sub("^" + $home; "~"))] | @tsv'
+      jq -r --arg home $HOME '.[] | [.sessionId, .id // "", .kind, .cwd, .name, (.state // .status // ""), (.cwd | sub("^" + $home; "~"))] | @tsv' |
+      tee ${LIST_CACHE:-/dev/null}
     exit ;;
+  # Drops the row from the cached list, so fzf redraws without waiting for `claude agents`.
   --stop)
     read -r _ tab <<< "$(find_pane $2 $3 $4)"
     stop "$tab" $3
+    rows=(${(f)"$(<$LIST_CACHE)"})
+    print -rl -- ${rows:#$2$'\t'*} > $LIST_CACHE
     exit ;;
+  # Only herdr is queried, in parallel, before the tab closes; `claude agents` takes ~300ms.
   --stop-focused)
-    id=$($herdr pane process-info --pane $HERDR_ACTIVE_PANE_ID |
-      jq -r 'first(.result.process_info.foreground_processes[].argv | select(.[-2] == "attach") | .[-1]) // empty')
-    if [[ -z $id ]]; then
-      title=$($herdr agent get $HERDR_ACTIVE_PANE_ID 2>/dev/null | jq -r '.result.agent.terminal_title_stripped // empty') || true
-      id=$(claude agents --json | jq -r --arg n "$title" 'first(.[] | select(.name == $n) | .id // empty) // empty')
-    fi
-    stop $HERDR_ACTIVE_TAB_ID "$id"
+    exec {info}< <($herdr pane process-info --pane $HERDR_ACTIVE_PANE_ID)
+    title=$($herdr pane get $HERDR_ACTIVE_PANE_ID | jq -r '.result.pane.terminal_title_stripped // empty')
+    id=$(jq -r 'first(.result.process_info.foreground_processes[].argv | select(.[-2] == "attach") | .[-1]) // empty' <&$info)
+    $herdr tab close $HERDR_ACTIVE_TAB_ID >/dev/null
+    [[ -n $id || -z $title ]] || id=$(claude agents --json | jq -r --arg n $title 'first(.[] | select(.name == $n) | .id // empty) // empty')
+    [[ -z $id ]] || claude stop $id >/dev/null
     exit ;;
 esac
+
+export LIST_CACHE=$(mktemp -t herdr-claude-agents.XXXXXX)
+trap 'rm -f $LIST_CACHE' EXIT
 
 # ctrl-x matches `claude agents`: the session stops, leaves the list, and its herdr tab closes.
 line=$($0 --list |
   fzf --reverse --delimiter '\t' --with-nth 5,6,7 --prompt "${cwd/#$HOME/~}: " \
   --header 'ctrl-a: all projects · ctrl-x: stop session' \
   --bind "ctrl-a:change-prompt(All: )+reload($0 --list)" \
-  --bind "ctrl-x:execute-silent($0 --stop {1} {2} {5})+reload($0 --list)") || exit 0
+  --bind "ctrl-x:execute-silent($0 --stop {1} {2} {5})+reload(cat $LIST_CACHE)") || exit 0
 IFS=$'\t' read -r sid id kind dir name _ <<< $line
 
 read -r pane _ <<< "$(find_pane $sid "$id" $name)"
