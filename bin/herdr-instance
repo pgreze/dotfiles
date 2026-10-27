@@ -1,0 +1,12 @@
+#!/bin/zsh
+# launchd entry point for one herdr session: its server plus the daemons named after the session,
+# e.g. `herdr-instance default herdr-claude-reaper`. Each session's plist picks its own daemons.
+# launchd stops the whole process group when the server exits, then KeepAlive restarts everything.
+set -u
+
+export HERDR_SESSION=$1
+shift
+for daemon; do
+  { while :; do $daemon; sleep 5; done } &
+done
+herdr --session $HERDR_SESSION server
