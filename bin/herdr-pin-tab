@@ -1,0 +1,25 @@
+#!/bin/zsh -l
+# Herdr key command: toggle a 🧷 pin on the active tab, like ctrl+t in `claude agents`.
+# Pinned tabs sit at the left; ~/.claude/hooks/herdr-tab-title.sh keeps the pin when it relabels.
+# Login shell because the herdr server only has the launchd PATH.
+set -eu
+
+herdr=${HERDR_BIN_PATH:-herdr}
+pin='🧷 '
+tab=$HERDR_ACTIVE_TAB_ID
+label=$($herdr tab get $tab | jq -r .result.tab.label)
+
+if [[ $label == $pin* ]]; then
+  label=${label#$pin}
+  # tab.move inserts before the tab at insert_index in the current order, so this lands right after the other pins.
+  index=$($herdr tab list --workspace $HERDR_ACTIVE_WORKSPACE_ID |
+    jq --arg p $pin '[.result.tabs[] | select(.label | startswith($p))] | length')
+else
+  label=$pin$label
+  index=0
+fi
+
+$herdr tab rename $tab $label >/dev/null
+# `herdr tab` has no move subcommand, so call the socket API.
+jq -nc --arg t $tab --argjson i $index '{id: "pin", method: "tab.move", params: {tab_id: $t, insert_index: $i}}' |
+  nc -U -w 2 ${HERDR_SOCKET_PATH:-~/.config/herdr/herdr.sock} >/dev/null

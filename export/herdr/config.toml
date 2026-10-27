@@ -60,3 +60,9 @@ command = "~/.my/bin/herdr-claude-agents"
 description = "focus or attach a Claude agents session"
 width = 100
 height = 20
+
+[[keys.command]]
+key = "cmd+shift+s"
+type = "shell"
+command = "~/.my/bin/herdr-pin-tab"
+description = "pin or unpin the tab"
