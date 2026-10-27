@@ -67,20 +67,20 @@ lesson "2. A session is a tab" \
   "Go to the %Btutor%b workspace (%Bcmd+shift+down%b), then press %Bcmd+shift+t%b.
 Type the prompt %Bsay hi%b, name the session %Btutor hello%b, and press %BEnter%b to keep the directory.
 A tab labelled %Btutor hello%b opens with Claude already working on your prompt." \
-  "[$tutor_ws | .workspace_id] as \$w | [.tabs[] | select(.label == \"tutor hello\" and (.workspace_id | IN(\$w[])))] | length > 0" \
+  "[$tutor_ws | .workspace_id] as \$w | [.tabs[] | select((.label | startswith(\"tutor hello\")) and (.workspace_id | IN(\$w[])))] | length > 0" \
   "$back_ws"
 
 lesson "3. Tabs follow the session name" \
   "In the %Btutor hello%b tab, type %B/rename tutor renamed%b and press %BEnter%b.
 Then send any prompt, like %Bsay hi%b.
-After each Claude turn, a hook copies the session name onto its tab." \
-  '[.tabs[] | select(.label == "tutor renamed")] | length > 0' "$back_ws"
+On each prompt, Claude labels its tab %Bsession name › current topic%b." \
+  '[.tabs[] | select(.label | startswith("tutor renamed"))] | length > 0' "$back_ws"
 
 lesson "4. Jump anywhere by name" \
   "Press %Bcmd+p%b to open the session navigator: every agent and terminal, grouped by theme.
 Press %B/%b, type %Brenamed%b, press %BEnter%b.
 This is the fastest way around: you never need to remember where a session lives." \
-  '.focused_tab_id as $t | [.tabs[] | select(.tab_id == $t and .label == "tutor renamed")] | length > 0' \
+  '.focused_tab_id as $t | [.tabs[] | select(.tab_id == $t and (.label | startswith("tutor renamed")))] | length > 0' \
   "$back_goto"
 
 lesson "5. Hop between agents" \
@@ -93,7 +93,7 @@ lesson "6. Plain tabs inside a theme" \
   "Go to the %Btutor%b workspace, press %Bcmd+t%b and name the tab %Bscratch%b.
 Then come back to the session tab with %Bcmd+left%b (%Bcmd+right%b goes forward, %Bcmd+1..9%b by number).
 Shell tabs sit beside the theme's sessions for builds, logs or git." \
-  "([.tabs[] | select(.label == \"scratch\")] | length > 0) and (.focused_tab_id as \$t | [.tabs[] | select(.tab_id == \$t and .label == \"tutor renamed\")] | length > 0)" \
+  "([.tabs[] | select(.label == \"scratch\")] | length > 0) and (.focused_tab_id as \$t | [.tabs[] | select(.tab_id == \$t and (.label | startswith(\"tutor renamed\")))] | length > 0)" \
   "$back_ws"
 
 lesson "7. Split, move, zoom" \
