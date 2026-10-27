@@ -1,0 +1,35 @@
+#!/bin/zsh
+# herdr-instance daemon: when a pane of $HERDR_SESSION showing a background
+# Claude session closes, by any key or command, stop that session so it leaves `claude agents`.
+# Polls instead of following herdr events: titles change without events, and a closed pane's state is gone.
+# A pane whose workspace also vanished is skipped, so closing a workspace or restarting herdr stops nothing.
+set -u
+
+herdr=(herdr --session ${HERDR_SESSION:-default})
+typeset -A seen  # Claude pane id -> "<workspace id>\t<last title>"
+
+# Picker tabs keep the shell's "exec claude attach <id>" title; agent view and attach panes take the session name.
+reap() {
+  local title=$1 id
+  if [[ $title =~ 'claude attach ([0-9a-f]+)$' ]]; then
+    id=$match[1]
+  else
+    id=$(claude agents --json | jq -r --arg n $title 'first(.[] | select(.kind == "background" and .name == $n) | .id) // empty')
+  fi
+  [[ -z $id ]] || print -r -- "$(date +%FT%T) $(claude stop $id 2>&1) ($title)"
+}
+
+while sleep 1; do
+  snap=$($herdr pane list 2>/dev/null) || { seen=(); continue }
+  panes=(${(f)"$(jq -r '.result.panes[].pane_id' <<< $snap)"})
+  workspaces=(${(f)"$(jq -r '.result.panes[].workspace_id' <<< $snap)"})
+
+  for p in ${(k)seen}; do
+    (( ${panes[(Ie)$p]} )) && continue
+    (( ${workspaces[(Ie)${seen[$p]%%$'\t'*}]} )) && reap ${seen[$p]#*$'\t'} &!
+  done
+
+  seen=()
+  jq -r '.result.panes[] | select(.agent == "claude") | "\(.pane_id)\t\(.workspace_id)\t\(.terminal_title_stripped)"' <<< $snap |
+    while IFS=$'\t' read -r p ws title; do seen[$p]=$ws$'\t'$title; done
+done

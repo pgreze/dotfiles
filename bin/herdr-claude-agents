@@ -1,7 +1,6 @@
 #!/bin/zsh
 # Herdr popup: pick a `claude agents` session, focus its pane or attach it in a new tab.
 # Lists the active pane's project like `claude agents --cwd .`; ctrl-a lists every project.
-# --stop-focused is the cmd+w key command: close the active tab, stopping its session if it has one.
 # No login shell: ~/.zshenv already sets the PATH the herdr server lacks, and -l costs ~30ms.
 set -eu
 
@@ -48,15 +47,6 @@ case ${1-} in
     stop "$tab" $3
     rows=(${(f)"$(<$LIST_CACHE)"})
     print -rl -- ${rows:#$2$'\t'*} > $LIST_CACHE
-    exit ;;
-  # Only herdr is queried, in parallel, before the tab closes; `claude agents` takes ~300ms.
-  --stop-focused)
-    exec {info}< <($herdr pane process-info --pane $HERDR_ACTIVE_PANE_ID)
-    title=$($herdr pane get $HERDR_ACTIVE_PANE_ID | jq -r '.result.pane.terminal_title_stripped // empty')
-    id=$(jq -r 'first(.result.process_info.foreground_processes[].argv | select(.[-2] == "attach") | .[-1]) // empty' <&$info)
-    $herdr tab close $HERDR_ACTIVE_TAB_ID >/dev/null
-    [[ -n $id || -z $title ]] || id=$(claude agents --json | jq -r --arg n $title 'first(.[] | select(.name == $n) | .id // empty) // empty')
-    [[ -z $id ]] || claude stop $id >/dev/null
     exit ;;
 esac
 
