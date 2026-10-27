@@ -1,11 +1,23 @@
 #!/bin/zsh
-# herdr-instance daemon: relabel tabs that keep herdr's default number label, "4" becoming "tty4".
-# Claude tabs get their session name from Claude's hooks, so only plain terminals keep a number.
+# herdr-instance daemon: label tabs that kept herdr's default number, following tab moves and titles.
+# A tab with an agent takes the agent's title (attach and agent view tabs get no label from Claude's hooks),
+# any other tab becomes tty<position>. Labels set by hand or by hooks are left alone.
+# Tab list order is display order; `number` in it is an id, not the position.
 set -u
 
 herdr=(herdr --session ${HERDR_SESSION:-default})
+typeset -A ours  # tab id -> label this daemon set, so it keeps that label current
+
 while sleep 1; do
-  $herdr tab list 2>/dev/null |
-    jq -r '.result.tabs[] | select(.label | test("^[0-9]+$")) | "\(.tab_id) \(.label)"' |
-    while read -r tab n; do $herdr tab rename $tab tty$n >/dev/null; done
+  tabs=$($herdr tab list 2>/dev/null) && panes=$($herdr pane list 2>/dev/null) || continue
+  jq -nr --argjson tabs $tabs --argjson panes $panes '
+    ([$panes.result.panes[] | select(.agent != null and (.terminal_title_stripped // "") != "") |
+      {(.tab_id): .terminal_title_stripped}] | add // {}) as $titles |
+    foreach $tabs.result.tabs[] as $t ({}; .[$t.workspace_id] += 1;
+      [$t.tab_id, $t.label, ($titles[$t.tab_id] // "tty\(.[$t.workspace_id])")]) | @tsv' |
+    while IFS=$'\t' read -r tab label want; do
+      [[ $label != $want ]] || continue
+      [[ $label == (tty|)<-> || $label == ${ours[$tab]-} ]] || continue
+      $herdr tab rename $tab $want >/dev/null && ours[$tab]=$want
+    done
 done
