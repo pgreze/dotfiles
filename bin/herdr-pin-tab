@@ -3,7 +3,7 @@
 # A job tab's pin also goes to ~/.claude/jobs/pins.json, so `claude agents` shows it too.
 # `herdr-pin-tab <tab> on|off` only sets the label; herdr-tab-labels uses it for pins made in `claude agents`.
 # `herdr-pin-tab --jobs` prints "<tab> <job>" for each tab showing a `claude agents` job.
-# Pinning moves the tab to the left; unpinning only drops the pin.
+# Pinning moves the tab to the left; unpinning moves it after the tabs still pinned.
 # ~/.claude/hooks/herdr-tab-title.sh keeps the pin when it relabels.
 # Login shell because the herdr server only has the launchd PATH.
 set -eu
@@ -12,16 +12,28 @@ herdr=${HERDR_BIN_PATH:-herdr}
 pin='🧷 '
 pins=~/.claude/jobs/pins.json
 
+# `herdr tab` has no move subcommand, so call the socket API.
+move() {
+  jq -nc --arg t $1 --argjson i $2 '{id: "pin", method: "tab.move", params: {tab_id: $t, insert_index: $i}}' |
+    nc -U -w 2 ${HERDR_SOCKET_PATH:-~/.config/herdr/herdr.sock} >/dev/null
+}
+
 label() {
-  local tab=$1 label=$($herdr tab get $1 | jq -r .result.tab.label)
-  if [[ $2 == off ]]; then
-    [[ $label != $pin* ]] || $herdr tab rename $tab ${label#$pin} >/dev/null
+  local tab=$1 label=$($herdr tab get $1 | jq -r .result.tab.label) i
+  if [[ $2 == on ]]; then
+    [[ $label == $pin* ]] || $herdr tab rename $tab $pin$label >/dev/null
+    move $tab 0
     return
   fi
-  [[ $label == $pin* ]] || $herdr tab rename $tab $pin$label >/dev/null
-  # `herdr tab` has no move subcommand, so call the socket API.
-  jq -nc --arg t $tab '{id: "pin", method: "tab.move", params: {tab_id: $t, insert_index: 0}}' |
-    nc -U -w 2 ${HERDR_SOCKET_PATH:-~/.config/herdr/herdr.sock} >/dev/null
+  [[ $label == $pin* ]] || return 0
+  $herdr tab rename $tab ${label#$pin} >/dev/null
+  # Moves right after the last pinned tab, only if it is on its right.
+  # insert_index counts positions before the tab leaves its own.
+  i=$($herdr tab list | jq --arg t $tab --arg p $pin '.result.tabs as $all |
+    ($all[] | select(.tab_id == $t).workspace_id) as $w | [$all[] | select(.workspace_id == $w)] |
+    (map(.tab_id) | index($t)) as $at | (map(.label | startswith($p)) | rindex(true)) as $last |
+    select($last != null and $last > $at) | $last + 1')
+  [[ -z $i ]] || move $tab $i
 }
 
 # `claude attach <id>` panes carry the job id in their argv.
