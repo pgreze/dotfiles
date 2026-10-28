@@ -24,6 +24,8 @@ close_tab = ["prefix+shift+x", "cmd+w"]
 previous_tab = ["prefix+p", "cmd+shift+[", "cmd+left"]
 next_tab     = ["prefix+n", "cmd+shift+]", "cmd+right"]
 switch_tab   = ["prefix+1..9", "cmd+1..9"]
+move_tab_previous = ["prefix+<", "cmd+shift+left"]
+move_tab_next     = ["prefix+>", "cmd+shift+right"]
 
 new_workspace      = ["prefix+shift+n", "cmd+n"]
 close_workspace    = ["prefix+shift+d", "cmd+shift+w"]
