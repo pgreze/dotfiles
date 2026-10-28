@@ -1,12 +1,16 @@
 #!/bin/zsh
 # herdr-instance daemon: label tabs that kept herdr's default number, following tab moves and titles.
 # A tab with an agent takes the agent's title (attach and agent view tabs get no label from Claude's hooks),
-# any other tab becomes tty<position>. Labels set by hand or by hooks are left alone.
+# any other tab becomes tty<position>. Labels set by hand or by hooks are left alone,
+# except a hook label made for an older session name, e.g. after /rename or /clear, until the hook's next Stop.
 # Tab list order is display order; `number` in it is an id, not the position.
 # It also pins and unpins job tabs when their job is pinned or unpinned in `claude agents`.
 set -u
 
 herdr=(herdr --session ${HERDR_SESSION:-default})
+pin='🧷 '
+# The session name ~/.claude/hooks/herdr-tab-title.sh last labeled each tab for, as its first line.
+seen_dir=${TMPDIR:-$(getconf DARWIN_USER_TEMP_DIR)}/herdr-tab-title
 typeset -A ours  # tab id -> label this daemon set, so it keeps that label current
 pinned=()  # empty at start, so pins made while this daemon was down still apply
 
@@ -24,12 +28,20 @@ while sleep 1; do
   tabs=$($herdr tab list 2>/dev/null) && panes=$($herdr pane list 2>/dev/null) || continue
   jq -nr --argjson tabs $tabs --argjson panes $panes '
     ([$panes.result.panes[] | select(.agent != null and (.terminal_title_stripped // "") != "") |
-      {(.tab_id): .terminal_title_stripped}] | add // {}) as $titles |
+      {(.tab_id): {pane: .pane_id, title: .terminal_title_stripped}}] | add // {}) as $agents |
     foreach $tabs.result.tabs[] as $t ({}; .[$t.workspace_id] += 1;
-      [$t.tab_id, $t.label, ($titles[$t.tab_id] // "tty\(.[$t.workspace_id])")]) | @tsv' |
-    while IFS=$'\t' read -r tab label want; do
-      [[ $label != $want ]] || continue
-      [[ $label == (tty|)<-> || $label == ${ours[$tab]-} ]] || continue
-      $herdr tab rename $tab $want >/dev/null && ours[$tab]=$want
+      [$t.tab_id, $t.label, ($agents[$t.tab_id].title // "tty\(.[$t.workspace_id])"), ($agents[$t.tab_id].pane // "")]) | @tsv' |
+    while IFS=$'\t' read -r tab label want pane; do
+      base=${label#$pin}
+      [[ $base != $want ]] || continue
+      stale=
+      # After Ctrl+Z out of attach, the title is the shell's, so it only names the session while Claude runs.
+      if [[ -n $pane && -r $seen_dir/$tab ]] && read -r seen < $seen_dir/$tab && [[ -n $seen && $seen != $want ]] &&
+        $herdr pane process-info --pane $pane |
+          jq -e 'any(.result.process_info.foreground_processes[]; .argv[0] // "" | test("claude"))' >/dev/null; then
+        stale=1
+      fi
+      [[ -n $stale || $base == (tty|)<-> || $base == ${ours[$tab]-} ]] || continue
+      $herdr tab rename $tab ${(M)label#$pin}$want >/dev/null && ours[$tab]=$want
     done
 done
