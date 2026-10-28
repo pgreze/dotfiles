@@ -3,12 +3,24 @@
 # A tab with an agent takes the agent's title (attach and agent view tabs get no label from Claude's hooks),
 # any other tab becomes tty<position>. Labels set by hand or by hooks are left alone.
 # Tab list order is display order; `number` in it is an id, not the position.
+# It also pins and unpins job tabs when their job is pinned or unpinned in `claude agents`.
 set -u
 
 herdr=(herdr --session ${HERDR_SESSION:-default})
 typeset -A ours  # tab id -> label this daemon set, so it keeps that label current
+pinned=()  # empty at start, so pins made while this daemon was down still apply
 
 while sleep 1; do
+  now=(${(f)"$(jq -r '.[]' ~/.claude/jobs/pins.json 2>/dev/null)"})
+  # Only changes apply, so herdr pins on job tabs survive until `claude agents` unpins them.
+  if [[ $now != $pinned ]] && jobs=$(~/.my/bin/herdr-pin-tab --jobs 2>/dev/null); then
+    print -r -- $jobs | while read -r tab job; do
+      if (( $now[(Ie)$job] && ! $pinned[(Ie)$job] )); then ~/.my/bin/herdr-pin-tab $tab on
+      elif (( ! $now[(Ie)$job] && $pinned[(Ie)$job] )); then ~/.my/bin/herdr-pin-tab $tab off
+      fi
+    done
+    pinned=($now)
+  fi
   tabs=$($herdr tab list 2>/dev/null) && panes=$($herdr pane list 2>/dev/null) || continue
   jq -nr --argjson tabs $tabs --argjson panes $panes '
     ([$panes.result.panes[] | select(.agent != null and (.terminal_title_stripped // "") != "") |

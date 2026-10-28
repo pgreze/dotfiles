@@ -1,5 +1,8 @@
 #!/bin/zsh -l
 # Herdr key command: toggle a 🧷 pin on the active tab, like ctrl+t in `claude agents`.
+# A job tab's pin also goes to ~/.claude/jobs/pins.json, so `claude agents` shows it too.
+# `herdr-pin-tab <tab> on|off` only sets the label; herdr-tab-labels uses it for pins made in `claude agents`.
+# `herdr-pin-tab --jobs` prints "<tab> <job>" for each tab showing a `claude agents` job.
 # Pinning moves the tab to the left; unpinning only drops the pin.
 # ~/.claude/hooks/herdr-tab-title.sh keeps the pin when it relabels.
 # Login shell because the herdr server only has the launchd PATH.
@@ -7,15 +10,50 @@ set -eu
 
 herdr=${HERDR_BIN_PATH:-herdr}
 pin='🧷 '
+pins=~/.claude/jobs/pins.json
+
+label() {
+  local tab=$1 label=$($herdr tab get $1 | jq -r .result.tab.label)
+  if [[ $2 == off ]]; then
+    [[ $label != $pin* ]] || $herdr tab rename $tab ${label#$pin} >/dev/null
+    return
+  fi
+  [[ $label == $pin* ]] || $herdr tab rename $tab $pin$label >/dev/null
+  # `herdr tab` has no move subcommand, so call the socket API.
+  jq -nc --arg t $tab '{id: "pin", method: "tab.move", params: {tab_id: $t, insert_index: 0}}' |
+    nc -U -w 2 ${HERDR_SOCKET_PATH:-~/.config/herdr/herdr.sock} >/dev/null
+}
+
+# `claude attach <id>` panes carry the job id in their argv.
+# Agent view panes only show the job's name as title, so a name shared by two jobs matches none.
+jobs() {
+  local names=(${(f)"$(jq -r '[input_filename, .name] | @tsv' ~/.claude/jobs/*/state.json)"}) p t title id m
+  $herdr pane list | jq -r '.result.panes[] | select(.agent != null) | [.pane_id, .tab_id, .terminal_title_stripped // ""] | @tsv' |
+    while IFS=$'\t' read -r p t title; do
+      id=$($herdr pane process-info --pane $p | jq -r 'first(.result.process_info.foreground_processes[] |
+        (.argv // []) | select(length > 1 and .[-2] == "attach") | .[-1]) // empty')
+      if [[ -z $id ]]; then
+        m=(${(M)names:#*$'\t'$title})
+        (( $#m == 1 )) && id=${${m[1]%/state.json$'\t'*}:t}
+      fi
+      [[ -z $id ]] || print -r -- "$t $id"
+    done
+}
+
+case ${1-} in
+  --jobs) jobs; exit ;;
+  ?*) label $1 $2; exit ;;
+esac
+
 tab=$HERDR_ACTIVE_TAB_ID
-label=$($herdr tab get $tab | jq -r .result.tab.label)
+state=on
+[[ $($herdr tab get $tab | jq -r .result.tab.label) != $pin* ]] || state=off
+label $tab $state
 
-if [[ $label == $pin* ]]; then
-  $herdr tab rename $tab ${label#$pin} >/dev/null
-  exit
-fi
-
-$herdr tab rename $tab $pin$label >/dev/null
-# `herdr tab` has no move subcommand, so call the socket API.
-jq -nc --arg t $tab '{id: "pin", method: "tab.move", params: {tab_id: $t, insert_index: 0}}' |
-  nc -U -w 2 ${HERDR_SOCKET_PATH:-~/.config/herdr/herdr.sock} >/dev/null
+# After the label, since finding the job takes a herdr call per agent pane.
+job=$(jobs | awk -v t=$tab '$1 == t { print $2; exit }')
+[[ -n $job ]] || exit 0
+[[ -f $pins ]] || print '[]' > $pins
+# Atomic like Claude's own writes, which re-read the file first.
+jq --arg j $job --arg s $state 'if $s == "off" then . - [$j] elif index($j) then . else . + [$j] end' $pins > $pins.$$
+mv $pins.$$ $pins
