@@ -1,0 +1,16 @@
+#!/bin/zsh
+# Print one line of Claude Code and LiteLLM quota, e.g. `CC 5h 42% · 7d 18% · LLM $3/$100`.
+# Claude limits come from claude-statusline; LiteLLM key info is fetched at most once a minute.
+cache=~/.cache/litellm-key-info.json
+if [[ -z $(find $cache -mmin -1 2>/dev/null) ]]; then
+  key=$(jq -r '.provider.litellm.options.apiKey' ~/.config/opencode/opencode.json)
+  curl -sf -m 5 https://litellm.mercari.in/key/info -H "Authorization: Bearer $key" >$cache.tmp && mv $cache.tmp $cache
+fi
+
+# A window whose reset time has passed is back to 0%, even if no session reported since.
+cc=$(jq -r '[["5h", .five_hour], ["7d", .seven_day]]
+  | map(select(.[1]) | "\(.[0]) \(if .[1].resets_at < now then 0 else .[1].used_percentage | round end)%")
+  | "CC " + join(" · ")' ~/.cache/claude-rate-limits.json 2>/dev/null)
+llm=$(jq -r '.info | "LLM $\(.spend | round)/$\(.max_budget | round)"' $cache 2>/dev/null)
+parts=($cc $llm)
+print -r -- ${(j: · :)parts}
