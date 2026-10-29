@@ -1,6 +1,0 @@
-#!/bin/zsh
-# Claude Code statusLine: save the account's rate limits for herdr-quota, then render with ccstatusline.
-input=$(cat)
-tmp=$(mktemp ~/.cache/claude-rate-limits.XXXXXX)
-jq -c '.rate_limits | select(.)' <<<$input >$tmp 2>/dev/null && [[ -s $tmp ]] && mv $tmp ~/.cache/claude-rate-limits.json || rm -f $tmp
-ccstatusline <<<$input

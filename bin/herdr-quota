@@ -1,16 +1,26 @@
 #!/bin/zsh
-# Print one line of Claude Code and LiteLLM quota, e.g. `CC 5h 42% · 7d 18% · LLM $3/$100`.
-# Claude limits come from claude-statusline; LiteLLM key info is fetched at most once a minute.
-cache=~/.cache/litellm-key-info.json
-if [[ -z $(find $cache -mmin -1 2>/dev/null) ]]; then
-  key=$(jq -r '.provider.litellm.options.apiKey' ~/.config/opencode/opencode.json)
-  curl -sf -m 5 https://litellm.mercari.in/key/info -H "Authorization: Bearer $key" >$cache.tmp && mv $cache.tmp $cache
-fi
+# Print one line of Claude Code and LiteLLM quota for the herdr tab bar,
+# e.g. `CC 🟢 5h 12% 3h · 🟡 Fable 7d 55% 4d · 🟢 LLM $3/$100`.
+# The dot shows what is left: green above 60%, yellow above 20%, red below. The tab bar strips ANSI colors.
+# Each source is fetched at most once a minute; a failed fetch keeps the cached data.
+refresh() { [[ -n $(find $1 -mmin -1 2>/dev/null) ]] || { curl -sf -m 5 ${@:2} >$1.tmp && mv $1.tmp $1 } }
 
-# A window whose reset time has passed is back to 0%, even if no session reported since.
-cc=$(jq -r '[["5h", .five_hour], ["7d", .seven_day]]
-  | map(select(.[1]) | "\(.[0]) \(if .[1].resets_at < now then 0 else .[1].used_percentage | round end)%")
-  | "CC " + join(" · ")' ~/.cache/claude-rate-limits.json 2>/dev/null)
-llm=$(jq -r '.info | "LLM $\(.spend | round)/$\(.max_budget | round)"' $cache 2>/dev/null)
+claude=~/.cache/claude-usage.json
+token=$(security find-generic-password -s "Claude Code-credentials" -w | jq -r .claudeAiOauth.accessToken)
+refresh $claude https://api.anthropic.com/api/oauth/usage -H "Authorization: Bearer $token" -H "anthropic-beta: oauth-2025-04-20"
+
+litellm=~/.cache/litellm-key-info.json
+key=$(jq -r .provider.litellm.options.apiKey ~/.config/opencode/opencode.json)
+refresh $litellm https://litellm.mercari.in/key/info -H "Authorization: Bearer $key"
+
+dots='def dot($left): if $left > 60 then "🟢" elif $left > 20 then "🟡" else "🔴" end;'
+cc=$(jq -r $dots'
+  def left: if . < 3600 then "\(./60 | floor)m" elif . < 86400 then "\(./3600 | floor)h" else "\(./86400 | floor)d" end;
+  [.limits[] | ((.resets_at // "") | sub("\\.[0-9]+"; "") | sub("\\+00:00$"; "Z") | try (fromdate - now) catch null) as $eta
+    | (if $eta != null and $eta < 0 then 0 else .percent end) as $used
+    | (if .group == "session" then "5h" elif .scope.model.display_name then "\(.scope.model.display_name) 7d" else "7d" end) as $label
+    | "\(dot(100 - $used)) \($label) \($used)%" + (if $eta != null and $eta > 0 then " \($eta | left)" else "" end)]
+  | select(length > 0) | "CC " + join(" · ")' $claude 2>/dev/null)
+llm=$(jq -r $dots'.info | "\(dot(100 - 100 * .spend / .max_budget)) LLM $\(.spend | round)/$\(.max_budget | round)"' $litellm 2>/dev/null)
 parts=($cc $llm)
 print -r -- ${(j: · :)parts}

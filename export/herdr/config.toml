@@ -6,6 +6,9 @@ enabled = false
 [ui]
 status_indicators = "symbols"
 prompt_new_workspace_name = true
+tab_bar_right = [
+  { type = "command", command = "~/.my/bin/herdr-quota", interval_seconds = 30, timeout_seconds = 10 },
+]
 
 [ui.toast]
 delivery = "terminal"
