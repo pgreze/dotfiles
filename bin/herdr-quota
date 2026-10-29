@@ -1,7 +1,7 @@
 #!/bin/zsh
 # Print one line of Claude Code and LiteLLM quota for the herdr tab bar,
-# e.g. `CC 🟢 5h 12% 3h · 🟡 Fable 7d 55% 4d · 🟢 LLM $3/$100`.
-# The dot shows what is left: green above 60%, yellow above 20%, red below. The tab bar strips ANSI colors.
+# e.g. `CC 5h 12% 3h · F7d 55% 4d · LLM $3/$100`: window, used percentage, time left before its reset.
+# A model-scoped weekly window is named by the model's initials, F for Fable.
 # Each source is fetched at most once a minute; a failed fetch keeps the cached data.
 refresh() { [[ -n $(find $1 -mmin -1 2>/dev/null) ]] || { curl -sf -m 5 ${@:2} >$1.tmp && mv $1.tmp $1 } }
 
@@ -13,14 +13,13 @@ litellm=~/.cache/litellm-key-info.json
 key=$(jq -r .provider.litellm.options.apiKey ~/.config/opencode/opencode.json)
 refresh $litellm https://litellm.mercari.in/key/info -H "Authorization: Bearer $key"
 
-dots='def dot($left): if $left > 60 then "🟢" elif $left > 20 then "🟡" else "🔴" end;'
-cc=$(jq -r $dots'
+cc=$(jq -r '
   def left: if . < 3600 then "\(./60 | floor)m" elif . < 86400 then "\(./3600 | floor)h" else "\(./86400 | floor)d" end;
   [.limits[] | ((.resets_at // "") | sub("\\.[0-9]+"; "") | sub("\\+00:00$"; "Z") | try (fromdate - now) catch null) as $eta
     | (if $eta != null and $eta < 0 then 0 else .percent end) as $used
-    | (if .group == "session" then "5h" elif .scope.model.display_name then "\(.scope.model.display_name) 7d" else "7d" end) as $label
-    | "\(dot(100 - $used)) \($label) \($used)%" + (if $eta != null and $eta > 0 then " \($eta | left)" else "" end)]
+    | (if .group == "session" then "5h" elif .scope.model.display_name then (.scope.model.display_name | split(" ") | map(.[0:1]) | join("")) + "7d" else "7d" end) as $label
+    | "\($label) \($used)%" + (if $eta != null and $eta > 0 then " \($eta | left)" else "" end)]
   | select(length > 0) | "CC " + join(" · ")' $claude 2>/dev/null)
-llm=$(jq -r $dots'.info | "\(dot(100 - 100 * .spend / .max_budget)) LLM $\(.spend | round)/$\(.max_budget | round)"' $litellm 2>/dev/null)
+llm=$(jq -r '.info | "LLM $\(.spend | round)/$\(.max_budget | round)"' $litellm 2>/dev/null)
 parts=($cc $llm)
 print -r -- ${(j: · :)parts}
