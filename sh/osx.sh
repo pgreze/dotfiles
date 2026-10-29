@@ -2,8 +2,6 @@
 ### OSX configuration
 ###
 
-alias restart_backup_and_sync="killall Backup\ and\ Sync && sleep 10 && open -a /Applications/Backup\ and\ Sync.app"
-
 switch_scroll_direction() {
     if [[ "$(defaults read -g com.apple.swipescrolldirection)" -eq 0 ]]; then
         echo "Switch to natural scrolling"
@@ -74,6 +72,9 @@ function osx_init {
 
 if [[ "$(uname)" == 'Darwin' ]]; then
     osx_init
+
+    # oh-my-zsh bubu alternative not asking before updating
+    alias bubu="brew update && brew outdated && brew upgrade --no-ask"
 
     # https://blog.akatz.org/fixing-macos-zsh-terminal-history-settings/
     # https://news.ycombinator.com/item?id=33186412
