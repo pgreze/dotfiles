@@ -1,7 +1,7 @@
 #!/bin/zsh
 # Print one line of Claude Code and LiteLLM quota for the herdr tab bar,
-# e.g. `CC 5h 12% 3h · F7d 55% 4d · LLM $3/$100`: window, used percentage, time left before its reset.
-# A model-scoped weekly window is named by the model's initials, F for Fable.
+# e.g. `CC 12% 3h · FBL 55% 4d · LLM $3/$100`: window, used percentage, time left before its reset.
+# CC is the 5h session window; a model's weekly window is the model name without vowels, FBL for Fable.
 # Each source is fetched at most once a minute; a failed fetch keeps the cached data.
 refresh() { [[ -n $(find $1 -mmin -1 2>/dev/null) ]] || { curl -sf -m 5 ${@:2} >$1.tmp && mv $1.tmp $1 } }
 
@@ -17,9 +17,9 @@ cc=$(jq -r '
   def left: if . < 3600 then "\(./60 | floor)m" elif . < 86400 then "\(./3600 | floor)h" else "\(./86400 | floor)d" end;
   [.limits[] | ((.resets_at // "") | sub("\\.[0-9]+"; "") | sub("\\+00:00$"; "Z") | try (fromdate - now) catch null) as $eta
     | (if $eta != null and $eta < 0 then 0 else .percent end) as $used
-    | (if .group == "session" then "5h" elif .scope.model.display_name then (.scope.model.display_name | split(" ") | map(.[0:1]) | join("")) + "7d" else "7d" end) as $label
+    | (if .group == "session" then "CC" elif .scope.model.display_name then (.scope.model.display_name | .[0:1] + (.[1:] | gsub("[aeiouAEIOU ]"; "")) | ascii_upcase) else "WK" end) as $label
     | "\($label) \($used)%" + (if $eta != null and $eta > 0 then " \($eta | left)" else "" end)]
-  | select(length > 0) | "CC " + join(" · ")' $claude 2>/dev/null)
+  | join(" · ")' $claude 2>/dev/null)
 llm=$(jq -r '.info | "LLM $\(.spend | round)/$\(.max_budget | round)"' $litellm 2>/dev/null)
 parts=($cc $llm)
 print -r -- ${(j: · :)parts}
