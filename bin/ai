@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # ai — multi-CLI launcher with profile selection
-# To add a CLI: append to CLIS/CLI_LABELS, define <NAME_UPPER>_PROFILES array
+# To add a CLI: append to CLIS/CLI_LABELS, define <NAME_UPPER>_PROFILES array (dashes become underscores)
 #
 # Use https://deepswe.datacurve.ai/ to identify the models optimizing accuracy/cost.
 
-CLIS=("claude" "agy" "codex")
-CLI_LABELS=("Claude" "Antigravity" "Codex")
+CLIS=("claude" "agy" "codex" "opencode" "cursor-agent")
+CLI_LABELS=("Claude" "Antigravity" "Codex" "opencode" "Cursor")
 
 # Profile format: "name|flags"
 CLAUDE_PROFILES=(
@@ -25,11 +25,24 @@ CODEX_PROFILES=(
     "standard|--model gpt-5.4"
     "slow|--model gpt-5.5"
 )
+# opencode has no --variant flag outside `opencode run`: switch variants in the TUI.
+OPENCODE_PROFILES=(
+    "fast|--model litellm/openai/gpt-5.6-luna"
+    "standard|--model litellm/openai/gpt-5.6-sol"
+    "slow|--model litellm/openai/gpt-6.1-sol"
+)
+CURSOR_AGENT_PROFILES=(
+    "fast|--model gpt-5.6-sol-low"
+    "standard|--model gpt-5.6-sol-medium"
+    "standard|--model gemini-4-argon-medium"
+    "slow|--model gpt-5.6-sol-high"
+    "slow|--model gemini-4-argon-high"
+)
 
 # Precompute uppercase CLI names for array lookups
 CLI_VARS=()
 for c in "${!CLIS[@]}"; do
-    CLI_VARS+=("$(echo "${CLIS[$c]}" | tr '[:lower:]' '[:upper:]')_PROFILES")
+    CLI_VARS+=("$(echo "${CLIS[$c]}" | tr '[:lower:]-' '[:upper:]_')_PROFILES")
 done
 
 # Build flat index of all (cli_idx|profile_idx) pairs
