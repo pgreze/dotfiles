@@ -21,9 +21,9 @@ AGY_PROFILES=(
     "slow|--model gemini-3.8-flash --effort high"
 )
 CODEX_PROFILES=(
-    "fast|--model gpt-5.4-mini"
-    "standard|--model gpt-5.4"
-    "slow|--model gpt-5.5"
+    "fast|--model openai/gpt-6-luna"
+    "standard|--model openai/gpt-6.1-sol -c model_reasoning_effort=medium"
+    "slow|--model openai/gpt-6.1-sol -c model_reasoning_effort=high"
 )
 # opencode has no --variant flag outside `opencode run`: switch variants in the TUI.
 OPENCODE_PROFILES=(
