@@ -45,8 +45,8 @@ fi
 
 # https://github.com/junegunn/fzf
 case $SHELL in
-  */zsh)  [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh   || echo "TODO: brew install fzf" ;;
-  */bash) [ -f ~/.fzf.bash ] && source ~/.fzf.bash || echo "TODO: brew install fzf" ;;
+  */zsh)  source <(fzf --zsh) || echo "TODO: brew install fzf" ;;
+  */bash) eval "$(fzf --bash)" || echo "TODO: brew install fzf" ;;
   *)      echo "Unsupported shell, cannot load fzf."
 esac
 
