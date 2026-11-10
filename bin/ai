@@ -21,7 +21,7 @@ AGY_PROFILES=(
     "slow|--model gemini-3.8-flash --effort high"
 )
 CODEX_PROFILES=(
-    "fast|--model openai/gpt-6-luna"
+    "fast|--model openai/gpt-6-luna -c model_reasoning_effort=low"
     "standard|--model openai/gpt-6.1-sol -c model_reasoning_effort=medium"
     "slow|--model openai/gpt-6.1-sol -c model_reasoning_effort=high"
 )
